@@ -44,7 +44,7 @@ const sidebarNavigation = [
   {
     section: 'Management',
     items: [
-      { label: 'Orders', icon: ShoppingCart, path: '/admin/orders', badge: 5, description: 'Manage customer orders' },
+      { label: 'Orders', icon: ShoppingCart, path: '/admin/orders', description: 'Manage customer orders' },
       { label: 'Products', icon: Inventory, path: '/admin/products', description: 'Product inventory management' },
       { label: 'Categories', icon: Category, path: '/admin/categories', description: 'Product categories' },
       { label: 'Offers', icon: LocalOffer, path: '/admin/offers', description: 'Special offers and promotions' },

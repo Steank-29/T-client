@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -11,6 +11,8 @@ import {
   Divider,
   alpha,
   useMediaQuery,
+  Chip,
+  Stack,
 } from '@mui/material';
 import {
   Notifications,
@@ -19,12 +21,18 @@ import {
   Person,
   Settings,
   Logout,
+  ShoppingCart,
+  Receipt,
+  FiberManualRecord,
+  AccessTime,
+  AttachMoney,
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAdmin } from '../context/AdminContext';
 import { getCurrentPageTitle } from '../config/adminNavigation';
 import { logout, getUserInitials } from '../utils/auth';
+import { orderService } from '../services/api';
 
 const TopBar = () => {
   const theme = useTheme();
@@ -34,16 +42,89 @@ const TopBar = () => {
   
   const {
     admin,
-    notifications,
-    unreadNotificationsCount,
     sidebarCollapsed,
     toggleMobileSidebar,
-    markNotificationAsRead,
-    markAllNotificationsAsRead,
   } = useAdmin();
 
   const [notificationsAnchor, setNotificationsAnchor] = useState(null);
   const [profileAnchor, setProfileAnchor] = useState(null);
+  
+  // ✅ Order notifications state
+  const [todayOrders, setTodayOrders] = useState([]);
+  const [todayOrdersCount, setTodayOrdersCount] = useState(0);
+  const [unreadOrderCount, setUnreadOrderCount] = useState(0);
+  const [loadingOrders, setLoadingOrders] = useState(false);
+
+  // ✅ Fetch today's orders
+  const fetchTodayOrders = useCallback(async () => {
+    setLoadingOrders(true);
+    try {
+      const today = new Date();
+      const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
+
+      const response = await orderService.getOrders({
+        limit: 50,
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+        startDate: startOfDay.toISOString(),
+        endDate: endOfDay.toISOString(),
+      });
+
+      if (response.data.success) {
+        const orders = response.data.data || [];
+        setTodayOrders(orders);
+        setTodayOrdersCount(orders.length);
+        
+        // ✅ Check localStorage for read notifications
+        const readOrders = JSON.parse(localStorage.getItem('readOrderNotifications') || '[]');
+        const unreadCount = orders.filter(order => !readOrders.includes(order._id)).length;
+        setUnreadOrderCount(unreadCount);
+      }
+    } catch (error) {
+      console.error('Error fetching today orders:', error);
+    } finally {
+      setLoadingOrders(false);
+    }
+  }, []);
+
+  // ✅ Fetch orders on mount and every 2 minutes
+  useEffect(() => {
+    fetchTodayOrders();
+    const interval = setInterval(fetchTodayOrders, 120000); // Refresh every 2 minutes
+    return () => clearInterval(interval);
+  }, [fetchTodayOrders]);
+
+  // ✅ Mark all notifications as read
+  const markAllAsRead = () => {
+    const allOrderIds = todayOrders.map(order => order._id);
+    localStorage.setItem('readOrderNotifications', JSON.stringify(allOrderIds));
+    setUnreadOrderCount(0);
+  };
+
+  // ✅ Mark single notification as read
+  const markAsRead = (orderId) => {
+    const readOrders = JSON.parse(localStorage.getItem('readOrderNotifications') || '[]');
+    if (!readOrders.includes(orderId)) {
+      readOrders.push(orderId);
+      localStorage.setItem('readOrderNotifications', JSON.stringify(readOrders));
+      setUnreadOrderCount(prev => Math.max(0, prev - 1));
+    }
+  };
+
+  // ✅ Format time
+  const getTimeAgo = (date) => {
+    const now = new Date();
+    const orderDate = new Date(date);
+    const diffMs = now - orderDate;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return orderDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  };
 
   const handleLogout = () => {
     logout();
@@ -67,6 +148,8 @@ const TopBar = () => {
     if (admin.role === 'user') return 'User';
     return admin.role || 'User';
   };
+
+  const formatCurrency = (amount) => `${parseFloat(amount || 0).toFixed(2)} TND`;
 
   return (
     <>
@@ -112,26 +195,58 @@ const TopBar = () => {
 
         {/* Right Side */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {/* Notifications */}
-          <Tooltip title={`Notifications (${unreadNotificationsCount} unread)`} arrow>
+          {/* ✅ Today's Orders Badge (quick view) */}
+          <Tooltip title={`${todayOrdersCount} orders today`} arrow>
+            <Chip
+              icon={<ShoppingCart sx={{ fontSize: 16 }} />}
+              label={todayOrdersCount}
+              size="small"
+              sx={{
+                fontFamily: 'Amaranth, sans-serif',
+                fontWeight: 700,
+                fontSize: '0.75rem',
+                bgcolor: alpha('#4caf50', 0.08),
+                color: '#4caf50',
+                border: '1px solid rgba(76,175,80,0.2)',
+                height: 32,
+                display: { xs: 'none', sm: 'inline-flex' },
+              }}
+            />
+          </Tooltip>
+
+          {/* ✅ Notifications Bell */}
+          <Tooltip title={`${unreadOrderCount} unread orders today`} arrow>
             <IconButton
-              onClick={(e) => setNotificationsAnchor(e.currentTarget)}
+              onClick={(e) => {
+                setNotificationsAnchor(e.currentTarget);
+              }}
               sx={{
                 color: '#141010',
                 transition: 'all 0.2s ease',
+                position: 'relative',
                 '&:hover': { 
                   bgcolor: alpha('#141010', 0.05) 
+                },
+                // ✅ Pulse animation when there are unread
+                animation: unreadOrderCount > 0 ? 'pulse 2s infinite' : 'none',
+                '@keyframes pulse': {
+                  '0%': { boxShadow: '0 0 0 0 rgba(200,16,46,0.4)' },
+                  '70%': { boxShadow: '0 0 0 10px rgba(200,16,46,0)' },
+                  '100%': { boxShadow: '0 0 0 0 rgba(200,16,46,0)' },
                 },
               }}
             >
               <Badge
-                badgeContent={unreadNotificationsCount}
+                badgeContent={unreadOrderCount}
                 sx={{
                   '& .MuiBadge-badge': {
                     fontFamily: 'Amaranth, sans-serif',
-                    fontWeight: 600,
+                    fontWeight: 700,
+                    fontSize: '0.65rem',
                     bgcolor: '#e70000',
                     color: '#ffffff',
+                    minWidth: 18,
+                    height: 18,
                   },
                 }}
               >
@@ -218,18 +333,23 @@ const TopBar = () => {
         </Box>
       </Box>
 
-      {/* Notifications Menu */}
+      {/* ✅ Notifications Menu - Today's Orders */}
       <Menu
         anchorEl={notificationsAnchor}
         open={Boolean(notificationsAnchor)}
-        onClose={() => setNotificationsAnchor(null)}
+        onClose={() => {
+          setNotificationsAnchor(null);
+          // Mark all as read when closing
+          markAllAsRead();
+        }}
         PaperProps={{
           sx: {
             mt: 1.5,
             borderRadius: '12px',
             boxShadow: '0 8px 40px rgba(0,0,0,0.12)',
-            minWidth: 320,
-            maxWidth: 360,
+            minWidth: 380,
+            maxWidth: 420,
+            maxHeight: 480,
             overflow: 'hidden',
             fontFamily: 'Amaranth, sans-serif',
           },
@@ -237,114 +357,207 @@ const TopBar = () => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
+        {/* Header */}
         <Box 
           sx={{ 
-            p: 2, 
+            p: 2.5, 
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center', 
-            borderBottom: '1px solid rgba(0,0,0,0.06)' 
+            borderBottom: '1px solid rgba(0,0,0,0.06)',
+            bgcolor: '#fcfefe',
           }}
         >
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              fontFamily: 'Amaranth, sans-serif',
-              fontWeight: 700, 
-              color: '#141010' 
-            }}
-          >
-            Notifications
-          </Typography>
-          {unreadNotificationsCount > 0 && (
-            <Typography
-              onClick={markAllNotificationsAsRead}
-              sx={{
-                fontFamily: 'Amaranth, sans-serif',
-                fontSize: '0.75rem',
-                color: '#141010',
-                fontWeight: 600,
-                cursor: 'pointer',
-                '&:hover': { textDecoration: 'underline' },
-              }}
-            >
-              Mark all as read
-            </Typography>
-          )}
-        </Box>
-        {notifications.length === 0 ? (
-          <Box sx={{ p: 3, textAlign: 'center' }}>
+          <Box>
             <Typography 
               sx={{ 
                 fontFamily: 'Amaranth, sans-serif',
-                color: '#666' 
+                fontWeight: 700, 
+                fontSize: '1rem',
+                color: '#141010',
               }}
             >
-              No notifications
+              Today's Orders
+            </Typography>
+            <Typography 
+              sx={{ 
+                fontFamily: 'Amaranth, sans-serif',
+                fontSize: '0.7rem',
+                color: '#666',
+                mt: 0.3,
+              }}
+            >
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
             </Typography>
           </Box>
-        ) : (
-          notifications.slice(0, 5).map((notif) => (
-            <MenuItem
-              key={notif.id}
-              onClick={() => markNotificationAsRead(notif.id)}
+          
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Chip
+              label={`${todayOrdersCount} orders`}
+              size="small"
               sx={{
-                py: 1.5,
-                px: 2,
-                borderLeft: notif.unread 
-                  ? '3px solid #141010' 
-                  : '3px solid transparent',
-                transition: 'all 0.2s ease',
                 fontFamily: 'Amaranth, sans-serif',
-                '&:hover': { 
-                  bgcolor: alpha('#141010', 0.04) 
-                },
+                fontWeight: 600,
+                fontSize: '0.7rem',
+                bgcolor: alpha('#4caf50', 0.1),
+                color: '#4caf50',
+                height: 24,
               }}
-            >
-              <Box sx={{ flex: 1 }}>
-                <Typography 
-                  sx={{ 
+            />
+            {unreadOrderCount > 0 && (
+              <Typography
+                onClick={markAllAsRead}
+                sx={{
+                  fontFamily: 'Amaranth, sans-serif',
+                  fontSize: '0.7rem',
+                  color: '#141010',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  '&:hover': { textDecoration: 'underline' },
+                }}
+              >
+                Mark read
+              </Typography>
+            )}
+          </Stack>
+        </Box>
+
+        {/* Orders List */}
+        <Box sx={{ maxHeight: 350, overflowY: 'auto' }}>
+          {loadingOrders ? (
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+              <Typography sx={{ fontFamily: 'Amaranth, sans-serif', color: '#666', fontSize: '0.85rem' }}>
+                Loading orders...
+              </Typography>
+            </Box>
+          ) : todayOrders.length === 0 ? (
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+              <Receipt sx={{ fontSize: 40, color: '#ccc', mb: 1 }} />
+              <Typography sx={{ fontFamily: 'Amaranth, sans-serif', color: '#666', fontWeight: 600 }}>
+                No orders today
+              </Typography>
+              <Typography sx={{ fontFamily: 'Amaranth, sans-serif', color: '#999', fontSize: '0.75rem', mt: 0.5 }}>
+                New orders will appear here
+              </Typography>
+            </Box>
+          ) : (
+            todayOrders.map((order) => {
+              const isUnread = !JSON.parse(localStorage.getItem('readOrderNotifications') || '[]').includes(order._id);
+              
+              return (
+                <MenuItem
+                  key={order._id}
+                  onClick={() => {
+                    markAsRead(order._id);
+                    setNotificationsAnchor(null);
+                    navigate(`/admin/orders?highlight=${order._id}`);
+                  }}
+                  sx={{
+                    py: 2,
+                    px: 2.5,
+                    borderLeft: isUnread 
+                      ? '3px solid #c8102e' 
+                      : '3px solid transparent',
+                    transition: 'all 0.2s ease',
                     fontFamily: 'Amaranth, sans-serif',
-                    fontSize: '0.85rem', 
-                    color: '#141010', 
-                    fontWeight: notif.unread ? 600 : 400 
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'stretch',
+                    gap: 0.5,
+                    '&:hover': { 
+                      bgcolor: alpha('#141010', 0.02) 
+                    },
                   }}
                 >
-                  {notif.text}
-                </Typography>
-                <Typography 
-                  sx={{ 
-                    fontFamily: 'Amaranth, sans-serif',
-                    fontSize: '0.7rem', 
-                    color: '#aaa', 
-                    mt: 0.3 
-                  }}
-                >
-                  {notif.time}
-                </Typography>
-              </Box>
-              {notif.unread && (
-                <Box 
-                  sx={{ 
-                    width: 8, 
-                    height: 8, 
-                    borderRadius: '50%', 
-                    bgcolor: '#141010', 
-                    ml: 1 
-                  }} 
-                />
-              )}
-            </MenuItem>
-          ))
-        )}
+                  {/* Top Row: Order Number + Time */}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography sx={{ 
+                        fontFamily: 'Amaranth, sans-serif',
+                        fontSize: '0.8rem', 
+                        fontWeight: 700, 
+                        color: '#141010',
+                      }}>
+                        #{order.orderNumber}
+                      </Typography>
+                      {isUnread && (
+                        <FiberManualRecord sx={{ fontSize: 8, color: '#c8102e' }} />
+                      )}
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <AccessTime sx={{ fontSize: 12, color: '#aaa' }} />
+                      <Typography sx={{ 
+                        fontFamily: 'Amaranth, sans-serif',
+                        fontSize: '0.65rem', 
+                        color: '#aaa',
+                      }}>
+                        {getTimeAgo(order.createdAt)}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  
+                  {/* Middle Row: Customer + Amount */}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography sx={{ 
+                      fontFamily: 'Amaranth, sans-serif',
+                      fontSize: '0.8rem', 
+                      color: '#666',
+                      fontWeight: 500,
+                    }}>
+                      {order.customer.fullName}
+                    </Typography>
+                    <Typography sx={{ 
+                      fontFamily: 'Amaranth, sans-serif',
+                      fontSize: '0.85rem', 
+                      fontWeight: 700, 
+                      color: '#c8102e',
+                    }}>
+                      {formatCurrency(order.finalAmount)}
+                    </Typography>
+                  </Box>
+                  
+                  {/* Bottom Row: Items + Status */}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography sx={{ 
+                      fontFamily: 'Amaranth, sans-serif',
+                      fontSize: '0.7rem', 
+                      color: '#999',
+                    }}>
+                      {order.items.length} {order.items.length === 1 ? 'item' : 'items'} • {order.paymentMethod === 'cash_on_delivery' ? 'COD' : order.paymentMethod}
+                    </Typography>
+                    <Chip
+                      label={order.status}
+                      size="small"
+                      sx={{
+                        fontFamily: 'Amaranth, sans-serif',
+                        fontWeight: 600,
+                        fontSize: '0.6rem',
+                        height: 20,
+                        bgcolor: order.status === 'pending' ? alpha('#ff9800', 0.1) : alpha('#4caf50', 0.1),
+                        color: order.status === 'pending' ? '#ff9800' : '#4caf50',
+                      }}
+                    />
+                  </Box>
+                </MenuItem>
+              );
+            })
+          )}
+        </Box>
+
+        {/* Footer */}
         <Box 
           sx={{ 
-            p: 1.5, 
+            p: 2, 
             borderTop: '1px solid rgba(0,0,0,0.06)', 
-            textAlign: 'center' 
+            textAlign: 'center',
+            bgcolor: '#fafafa',
           }}
         >
           <Typography
+            onClick={() => {
+              setNotificationsAnchor(null);
+              navigate('/admin/orders');
+            }}
             sx={{
               fontFamily: 'Amaranth, sans-serif',
               fontSize: '0.8rem',
@@ -354,12 +567,12 @@ const TopBar = () => {
               '&:hover': { textDecoration: 'underline' },
             }}
           >
-            View All Notifications
+            View All Orders →
           </Typography>
         </Box>
       </Menu>
 
-      {/* Profile Menu */}
+      {/* Profile Menu (unchanged) */}
       <Menu
         anchorEl={profileAnchor}
         open={Boolean(profileAnchor)}

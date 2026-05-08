@@ -319,40 +319,6 @@ const MobileDrawerContent = ({ onClose, onNavigate, currentLanguageData, onLangu
           <KeyboardArrowDown sx={{ color: '#141010', opacity: 0.6 }} />
         </ListItemButton>
 
-        <Typography
-          variant="caption"
-          sx={{
-            fontFamily: 'Amaranth, sans-serif',
-            color: alpha('#141010', 0.6),
-            px: 2,
-            mb: 1,
-            mt: 2,
-            display: 'block',
-          }}
-        >
-          ACCOUNT
-        </Typography>
-        <ListItemButton
-          onClick={() => onNavigate('/login')}
-          sx={{
-            borderRadius: 3,
-            px: 3,
-            py: 1.2,
-            transition: 'all 0.3s ease',
-            bgcolor: alpha('#141010', 0.02),
-            '&:hover': { bgcolor: alpha('#141010', 0.06), transform: 'translateX(8px)' },
-          }}
-        >
-          <ListItemIcon sx={{ minWidth: 40 }}>
-            <Person sx={{ color: '#141010' }} />
-          </ListItemIcon>
-          <ListItemText
-            primary="Tawakkul Portal"
-            primaryTypographyProps={{
-              sx: { color: '#141010', fontFamily: 'Amaranth, sans-serif', fontWeight: 500 },
-            }}
-          />
-        </ListItemButton>
       </Box>
     </Box>
   );

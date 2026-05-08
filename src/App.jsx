@@ -21,6 +21,7 @@ import AdminCategories from './admin/AdminCategories';
 import AdminDashboard from './admin/Dashboard';
 import Offers from './components/Offers';
 import Checkout from './components/Checkout';
+import AdminOrders from './admin/AdminOrders';
 
 
 // Check if user is authenticated
@@ -62,8 +63,6 @@ const createAdminPage = (title, description) => {
   return AdminPage;
 };
 
-// Admin Pages using factory
-const AdminOrders = createAdminPage('Orders', 'Manage and track all customer orders');
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
