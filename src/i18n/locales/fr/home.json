@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "brand": "Tawakkol",
+    "title": "Nouvelle Collection",
+    "saveUpTo": "ÉCONOMISEZ JUSQU'À",
+    "forAllItems": "SUR TOUS LES ARTICLES",
+    "tagline": "SOYEZ VOUS. SOYEZ AVEC",
+    "shopNow": "Acheter Maintenant"
+  },
+  "collections": {
+    "title": "Nos Collections",
+    "subtitle": "Découvrez nos dernières collections"
+  },
+  "categories": {
+    "sport": {
+      "name": "Sport",
+      "tagline": "Équipement Performance"
+    },
+    "streetwear": {
+      "name": "Streetwear",
+      "tagline": "Style Urbain"
+    },
+    "religious": {
+      "name": "Religieux",
+      "tagline": "Collection Essentielle"
+    }
+  },
+  "features": {
+    "shipping": {
+      "label": "Livraison",
+      "value": "9 TND",
+      "desc": "Livraison rapide partout en Tunisie"
+    },
+    "quality": {
+      "label": "Qualité",
+      "value": "Premium",
+      "desc": "Fabriqué avec attention aux détails"
+    },
+    "support": {
+      "label": "Support",
+      "value": "24/7",
+      "desc": "Toujours là quand vous avez besoin"
+    }
+  },
+  "viewAllProducts": "Voir Tous les Produits",
+  "addedToCart": "ajouté au panier !"
+}

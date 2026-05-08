@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "brand": "Tawakkol",
+    "title": "New Mentality Drop",
+    "saveUpTo": "SAVE UP TO",
+    "forAllItems": "FOR ALL ITEMS",
+    "tagline": "BE YOU. BE WITH",
+    "shopNow": "Shop Now"
+  },
+  "collections": {
+    "title": "Our Collections",
+    "subtitle": "Discover our latest collections"
+  },
+  "categories": {
+    "sport": {
+      "name": "Sport",
+      "tagline": "Performance Gear"
+    },
+    "streetwear": {
+      "name": "Streetwear",
+      "tagline": "Urban Style"
+    },
+    "religious": {
+      "name": "Religious",
+      "tagline": "Essential Collection"
+    }
+  },
+  "features": {
+    "shipping": {
+      "label": "Shipping",
+      "value": "9 TND",
+      "desc": "Fast delivery across Tunisia"
+    },
+    "quality": {
+      "label": "Quality",
+      "value": "Premium",
+      "desc": "Crafted with attention to detail"
+    },
+    "support": {
+      "label": "Support",
+      "value": "24/7",
+      "desc": "Always here when you need us"
+    }
+  },
+  "viewAllProducts": "View All Products",
+  "addedToCart": "added to cart!"
+}

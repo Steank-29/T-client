@@ -1,4 +1,6 @@
+// components/Footer.jsx - Full i18n Integration
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Container,
@@ -18,6 +20,7 @@ import {
   Send,
   Copyright,
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/MainL.png';
 
 // TikTok icon as a custom component
@@ -28,17 +31,21 @@ const TikTokIcon = () => (
 );
 
 const Footer = () => {
+  const { t, i18n } = useTranslation(['common', 'footer']);
+  const navigate = useNavigate();
+  const isRTL = i18n.language === 'ar';
+  
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
   const handleSubscribe = () => {
     if (!email) {
-      setEmailError('Please enter your email');
+      setEmailError(t('footer.emailRequired', 'Please enter your email'));
       return;
     }
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setEmailError('Please enter a valid email');
+      setEmailError(t('footer.emailInvalid', 'Please enter a valid email'));
       return;
     }
     setEmailError('');
@@ -56,12 +63,12 @@ const Footer = () => {
 
   // Quick links
   const quickLinks = [
-    { name: 'Home', url: '/' },
-    { name: 'Sport', url: '/sport' },
-    { name: 'Streetwear', url: '/streetwear' },
-    { name: 'Religious', url: '/religious' },
-    { name: 'Contact', url: '/contact' },
-    { name: 'Offers', url: '/offers' },
+    { name: t('nav.home', 'Home'), url: '/' },
+    { name: t('nav.sport', 'Sport'), url: '/sport' },
+    { name: t('nav.streetwear', 'Streetwear'), url: '/streetwear' },
+    { name: t('nav.religious', 'Religious'), url: '/religious' },
+    { name: t('nav.contact', 'Contact'), url: '/contact' },
+    { name: t('nav.offers', 'Offers'), url: '/offers' },
   ];
 
   const currentYear = new Date().getFullYear();
@@ -74,14 +81,15 @@ const Footer = () => {
         color: '#141010',
         mt: 'auto',
         borderTop: '1px solid #e0e0e0',
-        fontFamily: 'Amaranth, sans-serif',
+        fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
+        direction: isRTL ? 'rtl' : 'ltr',
       }}
     >
       <Container maxWidth="lg" sx={{ py: 6 }}>
         <Grid container spacing={4}>
           {/* Logo & Social Section - Left */}
           <Grid item xs={12} md={4}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2, flexDirection: isRTL ? 'row-reverse' : 'row' }}>
               <Box
                 component="img"
                 src={logo}
@@ -93,10 +101,10 @@ const Footer = () => {
                 sx={{ 
                   fontWeight: 700, 
                   color: '#141010',
-                  fontFamily: 'Amaranth, sans-serif',
+                  fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
                 }}
               >
-                Tawakkol
+                {t('appName', 'Tawakkol')}
               </Typography>
             </Box>
             <Typography 
@@ -104,12 +112,13 @@ const Footer = () => {
               sx={{ 
                 color: '#666666', 
                 mb: 2,
-                fontFamily: 'Amaranth, sans-serif',
+                fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
+                textAlign: isRTL ? 'right' : 'left',
               }}
             >
-              Premium sportswear, streetwear, and religious apparel. Designed for those who value quality, comfort, and style.
+              {t('footer.aboutDesc', 'Premium sportswear, streetwear, and religious apparel. Designed for those who value quality, comfort, and style.')}
             </Typography>
-            <Stack direction="row" spacing={1.5}>
+            <Stack direction="row" spacing={1.5} sx={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}>
               {socialLinks.map((social) => (
                 <IconButton
                   key={social.name}
@@ -142,10 +151,11 @@ const Footer = () => {
                 fontSize: '1rem',
                 mb: 2,
                 color: '#141010',
-                fontFamily: 'Amaranth, sans-serif',
+                fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
+                textAlign: isRTL ? 'right' : 'left',
               }}
             >
-              Quick Links
+              {t('footer.quickLinks', 'Quick Links')}
             </Typography>
             <Stack spacing={1.5}>
               {quickLinks.map((link) => (
@@ -153,15 +163,20 @@ const Footer = () => {
                   key={link.name}
                   href={link.url}
                   underline="none"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(link.url);
+                  }}
                   sx={{
                     color: '#666666',
                     fontSize: '0.875rem',
                     display: 'block',
-                    fontFamily: 'Amaranth, sans-serif',
+                    fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
+                    textAlign: isRTL ? 'right' : 'left',
                     transition: 'all 0.2s ease',
                     '&:hover': { 
                       color: '#141010',
-                      transform: 'translateX(4px)',
+                      transform: `translateX(${isRTL ? '-4px' : '4px'})`,
                     },
                   }}
                 >
@@ -189,27 +204,29 @@ const Footer = () => {
                   fontSize: '1.1rem',
                   mb: 1,
                   color: '#141010',
-                  fontFamily: 'Amaranth, sans-serif',
+                  fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
+                  textAlign: isRTL ? 'right' : 'left',
                 }}
               >
-                Stay Updated
+                {t('footer.newsletter', 'Stay Updated')}
               </Typography>
               <Typography 
                 variant="body2" 
                 sx={{ 
                   color: '#666666', 
                   mb: 2.5,
-                  fontFamily: 'Amaranth, sans-serif',
+                  fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
+                  textAlign: isRTL ? 'right' : 'left',
                 }}
               >
-                Subscribe to get special offers, free giveaways, and exclusive deals.
+                {t('footer.newsletterDesc', 'Subscribe to get special offers, free giveaways, and exclusive deals.')}
               </Typography>
               
               <Box sx={{ display: 'flex', gap: 1, flexDirection: { xs: 'column', sm: 'row' } }}>
                 <TextField
                   fullWidth
                   size="small"
-                  placeholder="Your email address"
+                  placeholder={t('footer.yourEmail', 'Your email address')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   error={!!emailError}
@@ -218,17 +235,13 @@ const Footer = () => {
                     '& .MuiOutlinedInput-root': {
                       backgroundColor: '#ffffff',
                       borderRadius: '12px',
-                      '&:hover fieldset': { 
-                        borderColor: '#141010',
-                      },
-                      '&.Mui-focused fieldset': { 
-                        borderColor: '#141010',
-                        borderWidth: '2px',
-                      },
+                      '&:hover fieldset': { borderColor: '#141010' },
+                      '&.Mui-focused fieldset': { borderColor: '#141010', borderWidth: '2px' },
                     },
                     '& .MuiInputBase-input': { 
                       color: '#141010',
-                      fontFamily: 'Amaranth, sans-serif',
+                      fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
+                      textAlign: isRTL ? 'right' : 'left',
                     },
                     flex: 1,
                   }}
@@ -242,7 +255,7 @@ const Footer = () => {
                     borderRadius: '12px',
                     padding: '8px 24px',
                     textTransform: 'none',
-                    fontFamily: 'Amaranth, sans-serif',
+                    fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
                     fontWeight: 600,
                     fontSize: '0.9rem',
                     minWidth: '120px',
@@ -250,17 +263,16 @@ const Footer = () => {
                       backgroundColor: '#2a2a2a',
                       transform: 'translateY(-2px)',
                     },
-                    '&:active': {
-                      transform: 'translateY(0)',
-                    },
+                    '&:active': { transform: 'translateY(0)' },
                     transition: 'all 0.3s ease',
                   }}
                 >
                   {subscribed ? (
-                    'Subscribed! ✓'
+                    `✓ ${t('footer.subscribed', 'Subscribed!')}`
                   ) : (
                     <>
-                      Subscribe <Send sx={{ ml: 1, fontSize: 18 }} />
+                      {t('footer.subscribe', 'Subscribe')}
+                      <Send sx={{ ml: isRTL ? 0 : 1, mr: isRTL ? 1 : 0, fontSize: 18 }} />
                     </>
                   )}
                 </Button>
@@ -273,11 +285,11 @@ const Footer = () => {
                     mt: 1.5, 
                     display: 'block', 
                     color: '#4caf50',
-                    fontFamily: 'Amaranth, sans-serif',
+                    fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
                     textAlign: 'center',
                   }}
                 >
-                  Thank you for subscribing! 🎉
+                  {t('footer.thankYou', 'Thank you for subscribing! 🎉')}
                 </Typography>
               )}
             </Paper>
@@ -296,31 +308,31 @@ const Footer = () => {
             gap: 1,
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexDirection: isRTL ? 'row-reverse' : 'row' }}>
             <Copyright sx={{ fontSize: 14, color: '#999999' }} />
             <Typography 
               variant="caption" 
               sx={{ 
                 color: '#999999',
-                fontFamily: 'Amaranth, sans-serif',
+                fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
               }}
             >
-              {currentYear} Tawakkol. All rights reserved.
+              {currentYear} {t('appName', 'Tawakkol')}. {t('footer.rights', 'All rights reserved.')}
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2, flexDirection: isRTL ? 'row-reverse' : 'row' }}>
             <Link 
               href="/privacy" 
               underline="none" 
               sx={{ 
                 color: '#999999', 
                 fontSize: '0.7rem', 
-                fontFamily: 'Amaranth, sans-serif',
+                fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
                 '&:hover': { color: '#141010' },
                 transition: 'color 0.3s ease',
               }}
             >
-              Privacy
+              {t('footer.privacy', 'Privacy')}
             </Link>
             <Link 
               href="/terms" 
@@ -328,12 +340,12 @@ const Footer = () => {
               sx={{ 
                 color: '#999999', 
                 fontSize: '0.7rem', 
-                fontFamily: 'Amaranth, sans-serif',
+                fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
                 '&:hover': { color: '#141010' },
                 transition: 'color 0.3s ease',
               }}
             >
-              Terms
+              {t('footer.terms', 'Terms')}
             </Link>
             <Link 
               href="/contact" 
@@ -341,12 +353,12 @@ const Footer = () => {
               sx={{ 
                 color: '#999999', 
                 fontSize: '0.7rem', 
-                fontFamily: 'Amaranth, sans-serif',
+                fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
                 '&:hover': { color: '#141010' },
                 transition: 'color 0.3s ease',
               }}
             >
-              Contact
+              {t('footer.contactUs', 'Contact')}
             </Link>
           </Box>
         </Box>

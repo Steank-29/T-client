@@ -1,0 +1,47 @@
+{
+  "hero": {
+    "brand": "توكل",
+    "title": "تشكيلة جديدة",
+    "saveUpTo": "وفر حتى",
+    "forAllItems": "على جميع المنتجات",
+    "tagline": "كن أنت. كن مع",
+    "shopNow": "تسوق الآن"
+  },
+  "collections": {
+    "title": "مجموعاتنا",
+    "subtitle": "اكتشف أحدث مجموعاتنا"
+  },
+  "categories": {
+    "sport": {
+      "name": "رياضة",
+      "tagline": "معدات الأداء"
+    },
+    "streetwear": {
+      "name": "ملابس عصرية",
+      "tagline": "أسلوب حضري"
+    },
+    "religious": {
+      "name": "ملابس دينية",
+      "tagline": "مجموعة أساسية"
+    }
+  },
+  "features": {
+    "shipping": {
+      "label": "الشحن",
+      "value": "9 د.ت",
+      "desc": "توصيل سريع في جميع أنحاء تونس"
+    },
+    "quality": {
+      "label": "الجودة",
+      "value": "ممتازة",
+      "desc": "مصنوعة بعناية فائقة"
+    },
+    "support": {
+      "label": "الدعم",
+      "value": "24/7",
+      "desc": "دائماً هنا عندما تحتاجنا"
+    }
+  },
+  "viewAllProducts": "عرض جميع المنتجات",
+  "addedToCart": "تمت الإضافة إلى السلة!"
+}

@@ -1,11 +1,15 @@
+// pages/ErrorPage.jsx - Full i18n Integration
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Box, Container, Typography, Button } from '@mui/material';
 import { Home, ArrowBack } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
 const ErrorPage = () => {
+  const { t, i18n } = useTranslation(['common']);
   const navigate = useNavigate();
+  const isRTL = i18n.language === 'ar';
 
   return (
     <Box
@@ -17,6 +21,7 @@ const ErrorPage = () => {
         justifyContent: 'center',
         position: 'relative',
         overflow: 'hidden',
+        direction: isRTL ? 'rtl' : 'ltr',
       }}
     >
       {/* Background Decorations */}
@@ -24,7 +29,8 @@ const ErrorPage = () => {
         sx={{
           position: 'absolute',
           top: -150,
-          right: -150,
+          right: isRTL ? 'auto' : -150,
+          left: isRTL ? -150 : 'auto',
           width: 500,
           height: 500,
           borderRadius: '50%',
@@ -36,7 +42,8 @@ const ErrorPage = () => {
         sx={{
           position: 'absolute',
           bottom: -100,
-          left: -100,
+          left: isRTL ? 'auto' : -100,
+          right: isRTL ? -100 : 'auto',
           width: 400,
           height: 400,
           borderRadius: '50%',
@@ -60,7 +67,7 @@ const ErrorPage = () => {
             >
               <Typography
                 sx={{
-                  fontFamily: 'Amaranth, sans-serif',
+                  fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
                   fontSize: { xs: '8rem', md: '12rem' },
                   fontWeight: 900,
                   color: '#141010',
@@ -70,7 +77,7 @@ const ErrorPage = () => {
                   display: 'inline-block',
                 }}
               >
-                404
+                {t('error.code', '404')}
               </Typography>
             </motion.div>
 
@@ -100,19 +107,19 @@ const ErrorPage = () => {
             >
               <Typography
                 sx={{
-                  fontFamily: 'Amaranth, sans-serif',
+                  fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
                   fontSize: { xs: '1.4rem', md: '1.8rem' },
                   fontWeight: 700,
                   color: '#141010',
                   mb: 1,
                 }}
               >
-                Page Not Found
+                {t('error.title', 'Page Not Found')}
               </Typography>
 
               <Typography
                 sx={{
-                  fontFamily: 'Amaranth, sans-serif',
+                  fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
                   fontSize: '1rem',
                   color: '#888',
                   mb: 5,
@@ -121,8 +128,7 @@ const ErrorPage = () => {
                   lineHeight: 1.6,
                 }}
               >
-                The page you're looking for doesn't exist or has been moved.
-                Let's get you back on track.
+                {t('error.message', "The page you're looking for doesn't exist or has been moved. Let's get you back on track.")}
               </Typography>
             </motion.div>
 
@@ -135,12 +141,13 @@ const ErrorPage = () => {
             >
               <Button
                 variant="contained"
-                startIcon={<Home />}
+                startIcon={isRTL ? null : <Home />}
+                endIcon={isRTL ? <Home /> : null}
                 onClick={() => navigate('/')}
                 sx={{
                   bgcolor: '#141010',
                   color: '#ffffff',
-                  fontFamily: 'Amaranth, sans-serif',
+                  fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
                   fontWeight: 600,
                   fontSize: '0.95rem',
                   textTransform: 'none',
@@ -155,17 +162,18 @@ const ErrorPage = () => {
                   transition: 'all 0.3s ease',
                 }}
               >
-                Go Home
+                {t('error.goHome', 'Go Home')}
               </Button>
 
               <Button
                 variant="outlined"
-                startIcon={<ArrowBack />}
+                startIcon={isRTL ? null : <ArrowBack sx={{ transform: isRTL ? 'rotate(180deg)' : 'none' }} />}
+                endIcon={isRTL ? <ArrowBack sx={{ transform: 'rotate(180deg)' }} /> : null}
                 onClick={() => navigate(-1)}
                 sx={{
                   borderColor: '#141010',
                   color: '#141010',
-                  fontFamily: 'Amaranth, sans-serif',
+                  fontFamily: isRTL ? '"Noto Kufi Arabic", "Tajawal", sans-serif' : 'Amaranth, sans-serif',
                   fontWeight: 600,
                   fontSize: '0.95rem',
                   textTransform: 'none',
@@ -183,7 +191,7 @@ const ErrorPage = () => {
                   transition: 'all 0.3s ease',
                 }}
               >
-                Go Back
+                {t('error.goBack', 'Go Back')}
               </Button>
             </motion.div>
           </Box>

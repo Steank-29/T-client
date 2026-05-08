@@ -18,8 +18,11 @@
     "axios": "^1.16.0",
     "dotenv": "^17.4.2",
     "framer-motion": "^12.38.0",
+    "i18next": "^26.0.10",
+    "i18next-browser-languagedetector": "^8.2.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "react-i18next": "^17.0.7",
     "react-router-dom": "^7.14.2",
     "react-spinners": "^0.17.0",
     "swiper": "^12.1.4"
