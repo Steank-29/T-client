@@ -27,9 +27,9 @@ const T = {
 
 const F = {
   bg: '#0F0F0F', bgCard: '#181818', bgField: '#242424', bgFieldFocus: '#2A2A2A',
-  border: '#2E2E2E', borderFocus: '#C8FF00', borderError: '#FF4444', borderSuccess: '#22C55E',
+  border: '#2E2E2E', borderFocus: '#0080ff', borderError: '#FF4444', borderSuccess: '#22C55E',
   text: '#F2F2F0', textMuted: '#8A8A8A', textPlaceholder: '#4A4A4A',
-  accent: '#C8FF00', accentDark: '#9FCC00', error: '#FF4444', success: '#22C55E',
+  accent: '#0080ff', accentDark: '#007acc', error: '#FF4444', success: '#22C55E',
   fontDisplay: '"Barlow Condensed", sans-serif', fontBody: '"DM Sans", sans-serif',
   fontAr: '"Noto Kufi Arabic", "Tajawal", sans-serif',
 };
@@ -168,7 +168,7 @@ const ProField = ({ field, value, onChange, onBlur, error, touched: isTouched })
   return (
     <Box sx={{ mb: 0 }}>
       <div className={cls} style={{ position: 'relative' }}>
-        <span className="pro-label">{field.label}{field.required !== false && <span style={{ color: '#C8FF00', marginLeft: 2 }}>*</span>}</span>
+        <span className="pro-label">{field.label}{field.required !== false && <span style={{ color: '#0080ff', marginLeft: 2 }}>*</span>}</span>
         <Icon className="pro-field-icon" style={{ fontSize: 17 }} />
         {field.multiline ? <textarea className="pro-field-inner" name={field.name} value={value} placeholder={field.placeholder} rows={field.rows || 2} onChange={onChange} onFocus={() => setFocused(true)} onBlur={(e) => { setFocused(false); onBlur(e); }} /> : <input className="pro-field-inner" type={field.type || 'text'} name={field.name} value={value} placeholder={field.placeholder} onChange={onChange} onFocus={() => setFocused(true)} onBlur={(e) => { setFocused(false); onBlur(e); }} />}
       </div>
@@ -301,7 +301,7 @@ const ProductDetail = () => {
       <Container sx={{ py: { xs: 2, sm: 4 } }}>
         <Breadcrumbs sx={{ mb: 3 }}>
           <Link component="button" underline="hover" onClick={() => navigate(product?.isOffer ? '/offers' : `/${(product?.category || 'sport').toLowerCase()}`)} sx={{ fontFamily: isRTL ? '"Noto Kufi Arabic"' : 'Amaranth, sans-serif', fontWeight: 600, display: 'flex', alignItems: 'center', color: '#c31919' }}>
-            <ArrowBack sx={{ mr: isRTL ? 0 : 0.5, ml: isRTL ? 0.5 : 0, fontSize: 18, transform: isRTL ? 'rotate(180deg)' : 'none' }} />{product?.isOffer ? t('common:offers', 'Offers') : (product?.category || 'Sport')}
+            <ArrowBack sx={{ mr: isRTL ? 0 : 0.5, ml: isRTL ? 0.5 : 0, fontSize: 18, transform: isRTL ? 'rotate(180deg)' : 'none' }} />{product?.isOffer ? t('common:offers.off', 'Offers') : (product?.category || 'Sport')}
           </Link>
           <Typography sx={{ fontFamily: isRTL ? '"Noto Kufi Arabic"' : 'Amaranth, sans-serif', fontWeight: 700, color: T.ink }}>{product.name}</Typography>
         </Breadcrumbs>

@@ -1,5 +1,5 @@
-// pages/Home.jsx - Full i18n Integration (EN/FR/AR)
-import React, { useState, useEffect } from 'react';
+// pages/Home.jsx - Full i18n Integration (EN/FR/AR) with Mobile Image Slider
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Box, Container, Typography, Button, Grid, Divider, IconButton,
@@ -12,15 +12,16 @@ import {
 } from '@mui/icons-material';
 import heroImage from '../assets/hero-image.jpg';
 import { keyframes } from '@mui/system';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { productService, offerService } from '../services/api';
 import { useCart } from '../context/CartContext';
 
-// Category images for mobile nav
-import sportCategoryImg from '../assets/p1.jpg';
-import streetwearCategoryImg from '../assets/p2.jpg';
-import religiousCategoryImg from '../assets/p3.jpg';
+// Category images for mobile slider
+import sportCategoryImg from '../assets/product2.jpg';
+import streetwearCategoryImg from '../assets/product8.jpg';
+import religiousCategoryImg from '../assets/product0.jpg';
+import offersCategoryImg from '../assets/p4.jpg';
 
 // ==================== Design Tokens ====================
 const T = {
@@ -72,61 +73,342 @@ const cardReveal = {
   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } }
 };
 
-// ==================== Category Navigation (Mobile Only) ====================
-const CategoryNavCards = () => {
+// ==================== Mobile Image Slider ====================
+// ==================== Mobile Image Slider ====================
+const MobileImageSlider = () => {
   const { t, i18n } = useTranslation(['home', 'common']);
   const navigate = useNavigate();
   const isRTL = i18n.language === 'ar';
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const autoPlayRef = useRef(null);
 
-  const categories = [
-    { name: t('common:sporth'), image: sportCategoryImg, color: T.colors.sport, path: '/sport', tagline: t('home:categories.sport.tagline') },
-    { name: t('common:streetwearh'), image: streetwearCategoryImg, color: T.colors.streetwear, path: '/streetwear', tagline: t('home:categories.streetwear.tagline') },
-    { name: t('common:religioush'), image: religiousCategoryImg, color: T.colors.religious, path: '/religious', tagline: t('home:categories.religious.tagline') },
+  const slides = [
+    {
+      image: offersCategoryImg,
+      title: t('common:offersh'),
+      tagline: t('home:categories.offers.tagline', 'Special Deals'),
+      color: T.colors.offers,
+      path: '/offers',
+    },
+    {
+      image: sportCategoryImg,
+      title: t('common:sporth'),
+      tagline: t('home:categories.sport.tagline', 'Performance Gear'),
+      color: T.colors.sport,
+      path: '/sport',
+    },
+    {
+      image: streetwearCategoryImg,
+      title: t('common:streetwearh'),
+      tagline: t('home:categories.streetwear.tagline', 'Urban Style'),
+      color: T.colors.streetwear,
+      path: '/streetwear',
+    },
+    {
+      image: religiousCategoryImg,
+      title: t('common:religioush'),
+      tagline: t('home:categories.religious.tagline', 'Modest Fashion'),
+      color: T.colors.religious,
+      path: '/religious',
+    },
   ];
 
+  const goToSlide = useCallback((index) => {
+    setCurrentSlide(index);
+  }, []);
+
+  const goToNext = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  }, [slides.length]);
+
+  const goToPrev = useCallback(() => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  }, [slides.length]);
+
+  // Auto-play
+  useEffect(() => {
+    if (!isHovered) {
+      autoPlayRef.current = setInterval(goToNext, 4000);
+    }
+    return () => {
+      if (autoPlayRef.current) {
+        clearInterval(autoPlayRef.current);
+      }
+    };
+  }, [isHovered, goToNext]);
+
+  const slideVariants = {
+    enter: (direction) => ({
+      x: direction > 0 ? '100%' : '-100%',
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction) => ({
+      x: direction < 0 ? '100%' : '-100%',
+      opacity: 0,
+    }),
+  };
+
   return (
-    <Box sx={{ display: { xs: 'grid', md: 'none' }, gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr auto', gap: 1.5, mt: 6, direction: isRTL ? 'rtl' : 'ltr' }}>
-      {categories.slice(0, 2).map((cat) => (
-        <Box key={cat.name} onClick={() => navigate(cat.path)}
-          sx={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', aspectRatio: '1/1', boxShadow: '0 4px 16px rgba(0,0,0,0.15)', '&:hover .cat-img': { transform: 'scale(1.1)' }, '&:hover .cat-overlay': { opacity: 1 }, '&:active': { transform: 'scale(0.98)' }, transition: 'transform 0.2s ease' }}>
-          <Box component="img" src={cat.image} alt={cat.name} className="cat-img"
-            sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s cubic-bezier(0.4,0,0.2,1)' }} />
-          <Box sx={{ position: 'absolute', inset: 0, background: 'transparent', zIndex: 1 }} />
-          <Box sx={{ position: 'relative', zIndex: 2, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 2, textAlign: 'center' }}>
-            <Typography sx={{ fontFamily: isRTL ? T.font.ar : T.font.display, fontWeight: 900, fontSize: '1.6rem', color: T.colors.white, textTransform: 'uppercase', letterSpacing: isRTL ? '0' : '0.02em', lineHeight: 1.1, mb: 0.5, textShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-              {cat.name}
-            </Typography>
-            <Typography sx={{ fontFamily: isRTL ? T.font.ar : T.font.body, fontWeight: 500, fontSize: '0.7rem', color: 'rgba(255,255,255,0.85)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              {cat.tagline}
-            </Typography>
-          </Box>
-          <Box className="cat-overlay" sx={{ position: 'absolute', inset: 0, zIndex: 3, background: 'rgba(0,0,0,0.3)', opacity: 0, transition: 'opacity 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Box sx={{ bgcolor: T.colors.white, color: cat.color, fontFamily: T.font.display, fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.08em', textTransform: 'uppercase', px: 2.5, py: 1, borderRadius: '50px', display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              {t('common:shopNow')}
-              <ArrowForward sx={{ fontSize: '0.9rem', transform: isRTL ? 'rotate(180deg)' : 'none' }} />
-            </Box>
-          </Box>
+    <Box
+      sx={{
+        display: { xs: 'block', md: 'none' },
+        direction: isRTL ? 'rtl' : 'ltr',
+        mt: -18,
+        ml: -2,
+        mr: -2,
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Box
+        sx={{
+          position: 'relative',
+          width: '100%',
+          height: '100vh',
+          maxHeight: '100svh',
+          borderRadius: 0,
+          overflow: 'hidden',
+          boxShadow: 'none',
+        }}
+      >
+        {/* Slide Container */}
+        <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+          <AnimatePresence initial={false} custom={currentSlide}>
+            <motion.div
+              key={currentSlide}
+              custom={currentSlide}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: 'tween', duration: 0.4, ease: [0.4, 0, 0.2, 1] },
+                opacity: { duration: 0.25 },
+              }}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+              }}
+            >
+              <Box
+                onClick={() => navigate(slides[currentSlide].path)}
+                sx={{
+                  position: 'relative',
+                  width: '100%',
+                  height: '100%',
+                  cursor: 'pointer',
+                  '&:active': { transform: 'scale(0.98)' },
+                  transition: 'transform 0.2s ease',
+                }}
+              >
+                {/* Background Image */}
+                <Box
+                  component="img"
+                  src={slides[currentSlide].image}
+                  alt={slides[currentSlide].title}
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                  }}
+                />
+
+                {/* Darker Gradient Overlay */}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.15) 100%)',
+                  }}
+                />
+
+                {/* Centered Content */}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '100%',
+                    px: 4,
+                    textAlign: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 1.5,
+                  }}
+                >
+                  {/* Title */}
+                  <Typography
+                    sx={{
+                      fontFamily: isRTL ? T.font.ar : T.font.display,
+                      fontWeight: 900,
+                      fontSize: { xs: '2.8rem', sm: '3.5rem' },
+                      color: T.colors.white,
+                      textTransform: 'uppercase',
+                      letterSpacing: isRTL ? '0' : '0.04em',
+                      lineHeight: 1,
+                      textShadow: '0 4px 20px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.5)',
+                    }}
+                  >
+                    {slides[currentSlide].title}
+                  </Typography>
+
+                  {/* Tagline */}
+                  <Typography
+                    sx={{
+                      fontFamily: isRTL ? T.font.ar : T.font.body,
+                      fontWeight: 700,
+                      fontSize: { xs: '1.1rem', sm: '1.3rem' },
+                      color: 'rgba(255,255,255,0.95)',
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      textShadow: '0 2px 8px rgba(0,0,0,0.6)',
+                      maxWidth: '80%',
+                    }}
+                  >
+                    {slides[currentSlide].tagline}
+                  </Typography>
+
+                  {/* Button */}
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(slides[currentSlide].path);
+                    }}
+                    sx={{
+                      mt: 1,
+                      fontFamily: isRTL ? T.font.ar : T.font.display,
+                      fontWeight: 800,
+                      fontSize: '0.9rem',
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      bgcolor: T.colors.white,
+                      color: slides[currentSlide].color,
+                      borderRadius: '50px',
+                      px: 4,
+                      py: 1.4,
+                      minWidth: 180,
+                      boxShadow: '0 6px 30px rgba(0,0,0,0.4), 0 2px 12px rgba(0,0,0,0.3)',
+                      border: '2px solid transparent',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      '&:hover': {
+                        bgcolor: 'transparent',
+                        color: T.colors.white,
+                        border: `2px solid ${T.colors.white}`,
+                        transform: 'translateY(-3px)',
+                        boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
+                      },
+                      '&:active': {
+                        transform: 'translateY(-1px)',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+                      },
+                    }}
+                  >
+                    {t('common:shopNow')}
+                    <ArrowForward sx={{ ml: 1, fontSize: '1.1rem', transition: 'transform 0.3s ease', '.MuiButton-root:hover &': { transform: 'translateX(4px)' } }} />
+                  </Button>
+                </Box>
+              </Box>
+            </motion.div>
+          </AnimatePresence>
         </Box>
-      ))}
-      {categories.slice(2, 3).map((cat) => (
-        <Box key={cat.name} onClick={() => navigate(cat.path)}
-          sx={{ position: 'relative', gridColumn: '1 / -1', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', height: 110, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', '&:hover .cat-img': { transform: 'scale(1.08)' }, '&:hover .cat-overlay': { opacity: 1 }, '&:active': { transform: 'scale(0.98)' }, transition: 'transform 0.2s ease' }}>
-          <Box component="img" src={cat.image} alt={cat.name} className="cat-img"
-            sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 40%', transition: 'transform 0.6s cubic-bezier(0.4,0,0.2,1)' }} />
-          <Box sx={{ position: 'absolute', inset: 0, background: 'transparent', zIndex: 1 }} />
-          <Box sx={{ position: 'relative', zIndex: 2, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, px: 3 }}>
-            <Typography sx={{ fontFamily: isRTL ? T.font.ar : T.font.display, fontWeight: 900, fontSize: '1.5rem', color: T.colors.white, textTransform: 'uppercase', letterSpacing: '0.02em', textShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-              {cat.name}
-            </Typography>
-          </Box>
-          <Box className="cat-overlay" sx={{ position: 'absolute', inset: 0, zIndex: 3, background: 'rgba(0,0,0,0.3)', opacity: 0, transition: 'opacity 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Box sx={{ bgcolor: T.colors.white, color: cat.color, fontFamily: T.font.display, fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.08em', textTransform: 'uppercase', px: 2.5, py: 1, borderRadius: '50px', display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              {t('common:shopNow')}
-              <ArrowForward sx={{ fontSize: '0.9rem', transform: isRTL ? 'rotate(180deg)' : 'none' }} />
-            </Box>
-          </Box>
+
+        {/* Navigation Arrows */}
+        <IconButton
+          onClick={goToPrev}
+          sx={{
+            position: 'absolute',
+            left: isRTL ? 'auto' : 12,
+            right: isRTL ? 12 : 'auto',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            bgcolor: 'rgba(255,255,255,0.15)',
+            color: T.colors.white,
+            width: 44,
+            height: 44,
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            '&:hover': {
+              bgcolor: 'rgba(255,255,255,0.3)',
+              transform: 'translateY(-50%) scale(1.1)',
+            },
+            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+            zIndex: 2,
+            transition: 'all 0.3s ease',
+          }}
+        >
+          {isRTL ? <ChevronRight sx={{ fontSize: 30 }} /> : <ChevronLeft sx={{ fontSize: 30 }} />}
+        </IconButton>
+
+        <IconButton
+          onClick={goToNext}
+          sx={{
+            position: 'absolute',
+            right: isRTL ? 'auto' : 12,
+            left: isRTL ? 12 : 'auto',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            bgcolor: 'rgba(255,255,255,0.15)',
+            color: T.colors.white,
+            width: 44,
+            height: 44,
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            '&:hover': {
+              bgcolor: 'rgba(255,255,255,0.3)',
+              transform: 'translateY(-50%) scale(1.1)',
+            },
+            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+            zIndex: 2,
+            transition: 'all 0.3s ease',
+          }}
+        >
+          {isRTL ? <ChevronLeft sx={{ fontSize: 30 }} /> : <ChevronRight sx={{ fontSize: 30 }} />}
+        </IconButton>
+
+        {/* Dots Indicator */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 40,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            gap: 1.5,
+            zIndex: 2,
+          }}
+        >
+          {slides.map((_, index) => (
+            <Box
+              key={index}
+              onClick={() => goToSlide(index)}
+              sx={{
+                width: index === currentSlide ? 32 : 10,
+                height: 10,
+                borderRadius: '5px',
+                bgcolor: index === currentSlide ? T.colors.white : 'rgba(255,255,255,0.3)',
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: index === currentSlide ? '0 0 12px rgba(255,255,255,0.6)' : 'none',
+                '&:hover': {
+                  bgcolor: 'rgba(255,255,255,0.7)',
+                },
+              }}
+            />
+          ))}
         </Box>
-      ))}
+      </Box>
     </Box>
   );
 };
@@ -294,8 +576,11 @@ const Home = () => {
 
   return (
     <Box sx={{ direction: isRTL ? 'rtl' : 'ltr' }}>
-      {/* HERO SECTION */}
-      <Box sx={{ bgcolor: T.colors.white, pt: { xs: 2, md: 4 }, pb: { xs: 4, md: 8 } }}>
+      {/* Mobile Slider - starts from exact top, full width, full height */}
+      <MobileImageSlider />
+
+      {/* HERO SECTION - Hidden on mobile, visible on tablet/desktop */}
+      <Box sx={{ bgcolor: T.colors.white, pt: { xs: 0, md: 4 }, pb: { xs: 4, md: 8 }, display: { xs: 'none', md: 'block' } }}>
         <Container maxWidth="lg">
           <Grid container alignItems="center" spacing={{ xs: 2, md: 4 }} direction={isRTL ? 'row-reverse' : 'row'}>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -336,13 +621,12 @@ const Home = () => {
                 </Box>
               </motion.div>
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <motion.div initial={{ opacity: 0, x: isRTL ? -60 : 60, rotateY: isRTL ? 10 : -10 }} animate={{ opacity: 1, x: 0, rotateY: 0 }} transition={{ duration: 0.8 }}>
                 <Box component="img" src={heroImage} alt="Tawakkol Hero" sx={{ width: '100%', height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.15))' }} />
               </motion.div>
             </Grid>
           </Grid>
-          <CategoryNavCards />
         </Container>
       </Box>
 

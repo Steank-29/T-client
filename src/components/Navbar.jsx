@@ -94,7 +94,6 @@ const AdhkarTicker = ({ isRTL, scrolled }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const tickerRef = useRef(null);
 
-  // Change adhkar every 12 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % ADHKAR.length);
@@ -102,7 +101,6 @@ const AdhkarTicker = ({ isRTL, scrolled }) => {
     return () => clearInterval(interval);
   }, []);
 
-  // Duplicate the array for seamless looping
   const duplicatedAdhkar = [...ADHKAR, ...ADHKAR];
 
   return (
@@ -446,52 +444,260 @@ const Navbar = () => {
 
   return (
     <>
-      <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1100, py: scrolled ? 1 : 2, transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)', bgcolor: 'transparent', backdropFilter: scrolled ? 'blur(20px)' : 'none', boxShadow: scrolled ? '0 4px 20px rgba(0,0,0,0.05)' : 'none', direction: isRTL ? 'rtl' : 'ltr' }}>
+      {/* Main Navbar */}
+      <Box 
+        sx={{ 
+          position: 'fixed', 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          zIndex: 1100, 
+          py: scrolled ? 1 : 2, 
+          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)', 
+          bgcolor: 'transparent', 
+          backdropFilter: scrolled ? 'blur(20px)' : 'none', 
+          boxShadow: scrolled ? '0 4px 20px rgba(0,0,0,0.05)' : 'none', 
+          direction: isRTL ? 'rtl' : 'ltr' 
+        }}
+      >
         <Container maxWidth="xl">
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: { xs: 2, md: 4 } }}>
-            <Box component="img" src={logo} alt="Tawakkul Logo" onClick={() => navigate('/')} sx={{ height: { xs: 80, sm: 100, md: 120 }, width: 'auto', objectFit: 'contain', cursor: 'pointer', transition: 'all 0.4s', filter: scrolled ? 'drop-shadow(0 2px 8px rgba(0,0,0,0.06))' : 'drop-shadow(0 4px 20px rgba(0,0,0,0.1))', '&:hover': { transform: 'scale(1.03)' } }} />
+          {/* Desktop Layout */}
+          <Box 
+            sx={{ 
+              display: { xs: 'none', md: 'flex' }, 
+              alignItems: 'center', 
+              justifyContent: 'space-between', 
+              gap: 4 
+            }}
+          >
+            <Box 
+              component="img" 
+              src={logo} 
+              alt="Tawakkul Logo" 
+              onClick={() => navigate('/')} 
+              sx={{ 
+                height: { md: 120 }, 
+                width: 'auto', 
+                objectFit: 'contain', 
+                cursor: 'pointer', 
+                transition: 'all 0.4s', 
+                filter: scrolled ? 'drop-shadow(0 2px 8px rgba(0,0,0,0.06))' : 'drop-shadow(0 4px 20px rgba(0,0,0,0.1))', 
+                '&:hover': { transform: 'scale(1.03)' } 
+              }} 
+            />
+            
             <Box sx={{ flex: 1, position: 'relative' }}>
-              <Box sx={{ position: 'relative', background: scrolled ? alpha('#fcfefe', 0.98) : alpha('#fcfefe', 0.95), borderRadius: '80px', boxShadow: scrolled ? '0 4px 20px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)' : '0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)', border: '1px solid rgba(20,16,16,0.08)', backdropFilter: 'blur(10px)', transition: 'all 0.4s', overflow: 'hidden', '&:hover': { boxShadow: '0 12px 40px rgba(0,0,0,0.12)', transform: 'translateY(-2px)' } }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: { xs: 2, sm: 2.5, md: 3.5 }, py: { xs: 0.8, sm: 1, md: 1.2 }, position: 'relative', zIndex: 2 }}>
-                  {isMobile ? (
-                    <>
-                      <IconButton onClick={() => setMobileOpen(true)} sx={{ color: '#141010', '&:hover': { bgcolor: alpha('#141010', 0.08), transform: 'rotate(90deg)' } }}><MenuOutlined /></IconButton>
-                      <Box sx={{ width: 40 }} />
-                      <Tooltip title={t('nav.account', 'Account')}><IconButton onClick={() => navigate('/login')} sx={iconButtonStyle}><Person /></IconButton></Tooltip>
-                      <Tooltip title={t('nav.cart', 'View Cart')}><IconButton onClick={openCart} sx={iconButtonStyle}><Badge badgeContent={cartCount} sx={badgeStyle()}><ShoppingCartOutlined /></Badge></IconButton></Tooltip>
-                    </>
-                  ) : (
-                    <>
-                      <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center', flex: 1, justifyContent: 'center' }}>
-                        {navItems.map((item) => <NavButton key={item.label} item={item} isActive={location.pathname === item.path} onClick={() => navigate(item.path)} isRTL={isRTL} />)}
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Tooltip title={t('nav.changeLanguage', 'Change Language')}>
-                          <Button onClick={handleLanguageClick} startIcon={<Box component="img" src={currentLang?.flag} alt={currentLang?.flagAlt} sx={{ width: 24, height: 18, borderRadius: 0.5, objectFit: 'cover' }} />} sx={{ color: '#141010', textTransform: 'none', fontFamily: 'Amaranth, sans-serif', fontSize: '0.9rem', fontWeight: 500, borderRadius: '50px', px: 1.8, py: 0.6, '&:hover': { backgroundColor: alpha('#141010', 0.08), transform: 'scale(1.02)' } }} />
-                        </Tooltip>
-                        <Tooltip title={t('nav.signIn', 'Sign In')}><IconButton onClick={() => navigate('/login')} sx={iconButtonStyle}><Person /></IconButton></Tooltip>
-                        <Tooltip title={t('nav.cart', 'View Cart')}><IconButton onClick={openCart} sx={iconButtonStyle}><Badge badgeContent={cartCount} sx={badgeStyle('small')}><ShoppingCartOutlined /></Badge></IconButton></Tooltip>
-                      </Box>
-                    </>
-                  )}
+              <Box 
+                sx={{ 
+                  position: 'relative', 
+                  background: scrolled ? alpha('#fcfefe', 0.98) : alpha('#fcfefe', 0.95), 
+                  borderRadius: '80px', 
+                  boxShadow: scrolled ? '0 4px 20px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)' : '0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)', 
+                  border: '1px solid rgba(20,16,16,0.08)', 
+                  backdropFilter: 'blur(10px)', 
+                  transition: 'all 0.4s', 
+                  overflow: 'hidden', 
+                  '&:hover': { 
+                    boxShadow: '0 12px 40px rgba(0,0,0,0.12)', 
+                    transform: 'translateY(-2px)' 
+                  } 
+                }}
+              >
+                <Box 
+                  sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between', 
+                    px: { md: 3.5 }, 
+                    py: { md: 1.2 }, 
+                    position: 'relative', 
+                    zIndex: 2 
+                  }}
+                >
+                  <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+                    {navItems.map((item) => (
+                      <NavButton 
+                        key={item.label} 
+                        item={item} 
+                        isActive={location.pathname === item.path} 
+                        onClick={() => navigate(item.path)} 
+                        isRTL={isRTL} 
+                      />
+                    ))}
+                  </Box>
+                  
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Tooltip title={t('nav.changeLanguage', 'Change Language')}>
+                      <Button 
+                        onClick={handleLanguageClick} 
+                        startIcon={
+                          <Box 
+                            component="img" 
+                            src={currentLang?.flag} 
+                            alt={currentLang?.flagAlt} 
+                            sx={{ width: 24, height: 18, borderRadius: 0.5, objectFit: 'cover' }} 
+                          />
+                        } 
+                        sx={{ 
+                          color: '#141010', 
+                          textTransform: 'none', 
+                          fontFamily: 'Amaranth, sans-serif', 
+                          fontSize: '0.9rem', 
+                          fontWeight: 500, 
+                          borderRadius: '50px', 
+                          px: 1.8, 
+                          py: 0.6, 
+                          '&:hover': { 
+                            backgroundColor: alpha('#141010', 0.08), 
+                            transform: 'scale(1.02)' 
+                          } 
+                        }} 
+                      />
+                    </Tooltip>
+                    <Tooltip title={t('nav.signIn', 'Sign In')}>
+                      <IconButton onClick={() => navigate('/login')} sx={iconButtonStyle}>
+                        <Person />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title={t('nav.cart', 'View Cart')}>
+                      <IconButton onClick={openCart} sx={iconButtonStyle}>
+                        <Badge badgeContent={cartCount} sx={badgeStyle('small')}>
+                          <ShoppingCartOutlined />
+                        </Badge>
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </Box>
               </Box>
             </Box>
           </Box>
+
+          {/* Mobile Layout - Menu left, Logo center, Icons right */}
+          <Box 
+            sx={{ 
+              display: { xs: 'flex', md: 'none' }, 
+              alignItems: 'center', 
+              justifyContent: 'space-between',
+              position: 'relative',
+              py: 1
+            }}
+          >
+            {/* Left - Menu Icon with "menu" text */}
+            <Box 
+              onClick={() => setMobileOpen(true)}
+              sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                cursor: 'pointer',
+                minWidth: 50,
+                '&:hover': {
+                  '& .menu-icon': {
+                    bgcolor: alpha('#141010', 0.08),
+                    transform: 'rotate(90deg)'
+                  }
+                }
+              }}
+            >
+              <IconButton 
+                className="menu-icon"
+                sx={{
+                  ...iconButtonStyle,
+                  transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                }}
+              >
+                <MenuOutlined sx={{ fontSize: 24 }} />
+              </IconButton>
+              <Typography 
+                sx={{ 
+                  fontFamily: 'Amaranth, sans-serif', 
+                  fontSize: '0.6rem', 
+                  fontWeight: 500, 
+                  color: '#141010',
+                  mt: -0.5,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}
+              >
+                {t('nav.menu', 'Menu')}
+              </Typography>
+            </Box>
+            
+            {/* Center - Smaller Logo */}
+            <Box 
+              component="img" 
+              src={logo} 
+              alt="Tawakkul Logo" 
+              onClick={() => navigate('/')}
+              sx={{ 
+                height: 50, 
+                width: 'auto', 
+                objectFit: 'contain', 
+                cursor: 'pointer',
+                transition: 'transform 0.3s',
+                '&:hover': { transform: 'scale(1.05)' }
+              }} 
+            />
+            
+            {/* Right - Person and Cart Icons */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minWidth: 50, justifyContent: 'flex-end' }}>
+              <Tooltip title={t('nav.account', 'Account')}>
+                <IconButton onClick={() => navigate('/login')} sx={{ ...iconButtonStyle, p: 1 }}>
+                  <Person sx={{ fontSize: 22 }} />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={t('nav.cart', 'View Cart')}>
+                <IconButton onClick={openCart} sx={{ ...iconButtonStyle, p: 1 }}>
+                  <Badge badgeContent={cartCount} sx={badgeStyle('small')}>
+                    <ShoppingCartOutlined sx={{ fontSize: 22 }} />
+                  </Badge>
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Box>
+
+          {/* Adhkar Ticker */}
           <AdhkarTicker isRTL={isRTL} scrolled={scrolled} />
+          
+         
         </Container>
       </Box>
 
-      {/* ✅ Adhkar Ticker Bar */}
-      
-
-      {/* Navbar + Ticker spacer */}
-      <Box sx={{ height: { xs: 210, sm: 240, md: 300 } }} />
+      {/* Navbar + Ticker + Secondary Menu spacer */}
+      <Box sx={{ height: { xs: 260, sm: 240, md: 300 } }} />
 
       {/* Language Menu */}
-      <Menu anchorEl={languageAnchor} open={Boolean(languageAnchor)} onClose={() => setLanguageAnchor(null)} TransitionComponent={Fade} PaperProps={{ sx: { bgcolor: '#ffffff', color: '#141010', mt: 1.5, borderRadius: 3, boxShadow: '0 8px 40px rgba(0,0,0,0.12)', minWidth: 200, overflow: 'hidden' } }}>
+      <Menu 
+        anchorEl={languageAnchor} 
+        open={Boolean(languageAnchor)} 
+        onClose={() => setLanguageAnchor(null)} 
+        TransitionComponent={Fade} 
+        PaperProps={{ 
+          sx: { 
+            bgcolor: '#ffffff', 
+            color: '#141010', 
+            mt: 1.5, 
+            borderRadius: 3, 
+            boxShadow: '0 8px 40px rgba(0,0,0,0.12)', 
+            minWidth: 200, 
+            overflow: 'hidden' 
+          } 
+        }}
+      >
         {LANGUAGES.map((lang) => (
-          <MenuItem key={lang.code} onClick={() => handleLanguageChange(lang.code)} selected={i18n.language === lang.code} sx={{ fontFamily: 'Amaranth, sans-serif', gap: 1.5, py: 1.2, px: 2, '&.Mui-selected': { bgcolor: alpha('#141010', 0.05) }, '&:hover': { bgcolor: alpha('#141010', 0.05) } }}>
+          <MenuItem 
+            key={lang.code} 
+            onClick={() => handleLanguageChange(lang.code)} 
+            selected={i18n.language === lang.code} 
+            sx={{ 
+              fontFamily: 'Amaranth, sans-serif', 
+              gap: 1.5, 
+              py: 1.2, 
+              px: 2, 
+              '&.Mui-selected': { bgcolor: alpha('#141010', 0.05) }, 
+              '&:hover': { bgcolor: alpha('#141010', 0.05) } 
+            }}
+          >
             <Box component="img" src={lang.flag} alt={lang.flagAlt} sx={{ width: 28, height: 20, borderRadius: 0.5, objectFit: 'cover' }} />
             <Box sx={{ flex: 1 }}>{lang.label}</Box>
             {i18n.language === lang.code && <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#4caf50' }} />}
@@ -500,13 +706,61 @@ const Navbar = () => {
       </Menu>
 
       {/* Mobile Drawer */}
-      <Drawer variant="temporary" anchor={isRTL ? 'right' : 'left'} open={mobileOpen} onClose={() => setMobileOpen(false)} sx={{ display: { xs: 'block', md: 'none' }, '& .MuiDrawer-paper': { width: '85%', maxWidth: 320, bgcolor: '#ffffff', borderTopRightRadius: isRTL ? 0 : 32, borderBottomRightRadius: isRTL ? 0 : 32, borderTopLeftRadius: isRTL ? 32 : 0, borderBottomLeftRadius: isRTL ? 32 : 0 } }}>
-        <MobileDrawerContent onClose={() => setMobileOpen(false)} onNavigate={handleNavigate} currentLanguageData={currentLang} onLanguageClick={handleLanguageChange} t={t} i18n={i18n} />
+      <Drawer 
+        variant="temporary" 
+        anchor={isRTL ? 'right' : 'left'} 
+        open={mobileOpen} 
+        onClose={() => setMobileOpen(false)} 
+        sx={{ 
+          display: { xs: 'block', md: 'none' }, 
+          '& .MuiDrawer-paper': { 
+            width: '85%', 
+            maxWidth: 320, 
+            bgcolor: '#ffffff', 
+            borderTopRightRadius: isRTL ? 0 : 32, 
+            borderBottomRightRadius: isRTL ? 0 : 32, 
+            borderTopLeftRadius: isRTL ? 32 : 0, 
+            borderBottomLeftRadius: isRTL ? 32 : 0 
+          } 
+        }}
+      >
+        <MobileDrawerContent 
+          onClose={() => setMobileOpen(false)} 
+          onNavigate={handleNavigate} 
+          currentLanguageData={currentLang} 
+          onLanguageClick={handleLanguageChange} 
+          t={t} 
+          i18n={i18n} 
+        />
       </Drawer>
 
       {/* Cart Drawer */}
-      <Drawer anchor={isRTL ? 'left' : 'right'} open={isCartOpen} onClose={closeCart} PaperProps={{ sx: { width: { xs: '100%', sm: 420 }, maxWidth: '100vw', bgcolor: '#ffffff' } }}>
-        <CartDrawerContent onClose={closeCart} cart={cart} cartIsEmpty={cartIsEmpty} cartCount={cartCount} subtotal={subtotal} shippingCost={shippingCost} total={total} FREE_SHIPPING_THRESHOLD={FREE_SHIPPING_THRESHOLD} updateQuantity={updateQuantity} removeFromCart={removeFromCart} t={t} i18n={i18n} />
+      <Drawer 
+        anchor={isRTL ? 'left' : 'right'} 
+        open={isCartOpen} 
+        onClose={closeCart} 
+        PaperProps={{ 
+          sx: { 
+            width: { xs: '100%', sm: 420 }, 
+            maxWidth: '100vw', 
+            bgcolor: '#ffffff' 
+          } 
+        }}
+      >
+        <CartDrawerContent 
+          onClose={closeCart} 
+          cart={cart} 
+          cartIsEmpty={cartIsEmpty} 
+          cartCount={cartCount} 
+          subtotal={subtotal} 
+          shippingCost={shippingCost} 
+          total={total} 
+          FREE_SHIPPING_THRESHOLD={FREE_SHIPPING_THRESHOLD} 
+          updateQuantity={updateQuantity} 
+          removeFromCart={removeFromCart} 
+          t={t} 
+          i18n={i18n} 
+        />
       </Drawer>
     </>
   );

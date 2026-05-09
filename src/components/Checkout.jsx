@@ -30,14 +30,14 @@ const DesignSystem = {
     bgField: '#1A1A1A',
     bgFieldFocus: '#242424',
     border: '#2A2A2A',
-    borderFocus: '#C8FF00',
+    borderFocus: '#0080ff',
     borderError: '#FF4444',
     borderSuccess: '#22C55E',
     text: '#000000',
     textMuted: '#8A8A8A',
     textPlaceholder: '#4A4A4A',
-    accent: '#C8FF00',
-    accentDark: '#9FCC00',
+    accent: '#0080ff',
+    accentDark: '#007acc',
     error: '#FF4444',
     success: '#22C55E',
     warning: '#F59E0B',
@@ -74,38 +74,147 @@ const getFormFields = (t) => [
 
 // ==================== INJECT DARK THEME STYLES ====================
 const injectDarkFormStyles = (isRTL) => {
-  if (document.getElementById('checkout-dark-styles')) return;
+  const existingStyle = document.getElementById('checkout-dark-styles');
+  if (existingStyle) {
+    existingStyle.remove();
+  }
   
   const style = document.createElement('style');
   style.id = 'checkout-dark-styles';
   style.textContent = `
     @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap');
     
-    .dark-field-wrap { position: relative; margin-bottom: 0; }
-    .dark-field-label { position: absolute; top: -10px; ${isRTL ? 'right' : 'left'}: 14px; font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #8A8A8A; background: #1A1A1A; padding: 0 8px; z-index: 1; transition: color 0.2s ease; pointer-events: none; }
-    .dark-field-wrap.focused .dark-field-label { color: #C8FF00; }
+    .dark-field-wrap { 
+      position: relative; 
+      margin-bottom: 0; 
+      width: 100%;
+      max-width: 100%;
+    }
+    .dark-field-label { 
+      position: absolute; 
+      top: -10px; 
+      ${isRTL ? 'right' : 'left'}: 14px; 
+      font-family: 'Barlow Condensed', sans-serif; 
+      font-size: 0.65rem; 
+      font-weight: 800; 
+      letter-spacing: 0.18em; 
+      text-transform: uppercase; 
+      color: #8A8A8A; 
+      background: #1A1A1A; 
+      padding: 0 8px; 
+      z-index: 1; 
+      transition: color 0.2s ease; 
+      pointer-events: none; 
+      white-space: nowrap;
+    }
+    ${isRTL ? `
+    .dark-field-label {
+      font-family: 'Noto Kufi Arabic', 'Tajawal', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0;
+      font-size: 0.7rem;
+    }
+    ` : ''}
+    .dark-field-wrap.focused .dark-field-label { color: #0080ff; }
     .dark-field-wrap.has-error .dark-field-label { color: #FF4444; }
     .dark-field-wrap.is-valid .dark-field-label { color: #22C55E; }
-    .dark-field-input { width: 100%; background: #1A1A1A; border: 1.5px solid #2A2A2A; border-radius: 10px; color: #F2F2F0; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 400; padding: ${isRTL ? '14px 42px 14px 44px' : '14px 44px 14px 42px'}; outline: none; transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease; box-sizing: border-box; resize: none; -webkit-appearance: none; text-align: ${isRTL ? 'right' : 'left'}; }
+    .dark-field-input { 
+      width: 100%; 
+      max-width: 100%;
+      box-sizing: border-box;
+      background: #1A1A1A; 
+      border: 1.5px solid #2A2A2A; 
+      border-radius: 10px; 
+      color: #F2F2F0; 
+      font-family: 'DM Sans', sans-serif; 
+      font-size: 0.92rem; 
+      font-weight: 400; 
+      padding: ${isRTL ? '14px 42px 14px 44px' : '14px 44px 14px 42px'}; 
+      outline: none; 
+      transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease; 
+      resize: none; 
+      -webkit-appearance: none; 
+      text-align: ${isRTL ? 'right' : 'left'};
+      direction: ${isRTL ? 'rtl' : 'ltr'};
+    }
+    ${isRTL ? `
+    .dark-field-input {
+      font-family: 'Noto Kufi Arabic', 'Tajawal', sans-serif;
+    }
+    ` : ''}
     .dark-field-input::placeholder { color: #4A4A4A; }
-    .dark-field-input:focus { border-color: #C8FF00; background: #242424; box-shadow: 0 0 0 3px rgba(200, 255, 0, 0.08); }
+    .dark-field-input:focus { border-color: #0080ff; background: #242424; box-shadow: 0 0 0 3px rgba(200, 255, 0, 0.08); }
     .dark-field-wrap.has-error .dark-field-input { border-color: #FF4444; }
     .dark-field-wrap.is-valid .dark-field-input { border-color: #22C55E; }
-    .dark-field-icon { position: absolute; ${isRTL ? 'right' : 'left'}: 13px; top: 50%; transform: translateY(-50%); color: #8A8A8A; font-size: 17px !important; transition: color 0.2s ease; pointer-events: none; }
+    .dark-field-icon { 
+      position: absolute; 
+      ${isRTL ? 'right' : 'left'}: 13px; 
+      top: 50%; 
+      transform: translateY(-50%); 
+      color: #8A8A8A; 
+      font-size: 17px !important; 
+      transition: color 0.2s ease; 
+      pointer-events: none; 
+    }
     .dark-field-wrap.multiline .dark-field-icon { top: 18px; transform: none; }
-    .dark-field-wrap.focused .dark-field-icon { color: #C8FF00; }
-    .dark-field-helper { font-family: 'DM Sans', sans-serif; font-size: 0.72rem; font-weight: 500; margin-top: 5px; margin-${isRTL ? 'right' : 'left'}: 2px; min-height: 18px; text-align: ${isRTL ? 'right' : 'left'}; }
-    .dark-submit-btn { width: 100%; background: #C8FF00; color: #0A0A0A; border: none; border-radius: 10px; padding: 16px 24px; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 0.9rem; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 24px rgba(200, 255, 0, 0.2); transition: all 0.3s ease; }
-    .dark-submit-btn:hover:not(:disabled) { background: #9FCC00; transform: translateY(-2px); box-shadow: 0 6px 32px rgba(200, 255, 0, 0.3); }
+    .dark-field-wrap.focused .dark-field-icon { color: #0080ff; }
+    .dark-field-helper { 
+      font-family: 'DM Sans', sans-serif; 
+      font-size: 0.72rem; 
+      font-weight: 500; 
+      margin-top: 5px; 
+      margin-${isRTL ? 'right' : 'left'}: 2px; 
+      min-height: 18px; 
+      text-align: ${isRTL ? 'right' : 'left'};
+    }
+    ${isRTL ? `
+    .dark-field-helper {
+      font-family: 'Noto Kufi Arabic', 'Tajawal', sans-serif;
+    }
+    ` : ''}
+    .dark-submit-btn { 
+      width: 100%; 
+      background: #0080ff; 
+      color: white; 
+      border: none; 
+      border-radius: 10px; 
+      padding: 16px 24px; 
+      font-family: 'Barlow Condensed', sans-serif; 
+      font-weight: 900; 
+      font-size: 0.9rem; 
+      letter-spacing: 0.14em; 
+      text-transform: uppercase; 
+      cursor: pointer; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 10px; 
+      box-shadow: 0 4px 24px rgba(0, 128, 255, 0.2); 
+      transition: all 0.3s ease; 
+    }
+    ${isRTL ? `
+    .dark-submit-btn {
+      font-family: 'Noto Kufi Arabic', 'Tajawal', sans-serif;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+    ` : ''}
+    .dark-submit-btn:hover:not(:disabled) { background: #0058cc; transform: translateY(-2px); box-shadow: 0 6px 32px rgba(0, 128, 255, 0.3); }
     .dark-submit-btn:disabled { background: #2A2A2A; color: #4A4A4A; cursor: not-allowed; box-shadow: none; transform: none; }
     @keyframes spin-checkout { to { transform: rotate(360deg); } }
     .checkout-spinner { animation: spin-checkout 0.8s linear infinite; display: inline-flex; }
     .checkout-step-dot { width: 6px; height: 6px; border-radius: 50%; background: #2A2A2A; transition: all 0.3s ease; }
-    .checkout-step-dot.active { background: #C8FF00; transform: scale(1.4); box-shadow: 0 0 8px rgba(200, 255, 0, 0.4); }
+    .checkout-step-dot.active { background: #0080ff; transform: scale(1.4); box-shadow: 0 0 8px rgba(0, 128, 255, 0.4); }
     .checkout-step-dot.done { background: #22C55E; box-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
     .cart-item-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .cart-item-hover:hover { border-color: #C8FF00 !important; background: rgba(200, 255, 0, 0.02) !important; transform: translateX(${isRTL ? '-4px' : '4px'}); }
-    .price-glow { text-shadow: 0 0 20px rgba(200, 255, 0, 0.15); }
+    .cart-item-hover:hover { border-color: #0080ff !important; background: rgba(0, 128, 255, 0.02) !important; transform: translateX(${isRTL ? '-4px' : '4px'}); }
+    .price-glow { text-shadow: 0 0 20px rgba(0, 128, 255, 0.15); }
+    
+    /* Form container to maintain width */
+    .checkout-form-container {
+      width: 100%;
+      max-width: 100%;
+    }
   `;
   document.head.appendChild(style);
 };
@@ -121,17 +230,17 @@ const DarkField = ({ field, value, onChange, onBlur, error, touched: isTouched, 
   const wrapperClasses = ['dark-field-wrap', field.multiline ? 'multiline' : '', focused ? 'focused' : '', hasError ? 'has-error' : '', isValid ? 'is-valid' : ''].filter(Boolean).join(' ');
 
   return (
-    <Box sx={{ mb: 0 }}>
-      <div className={wrapperClasses} style={{ position: 'relative' }}>
+    <Box sx={{ mb: 0, width: '100%' }}>
+      <div className={wrapperClasses} style={{ position: 'relative', width: '100%' }}>
         <span className="dark-field-label">
           {field.label}
-          {field.required !== false && <span style={{ color: '#C8FF00', marginLeft: isRTL ? 0 : 2, marginRight: isRTL ? 2 : 0 }}>*</span>}
+          {field.required !== false && <span style={{ color: '#0080ff', marginLeft: isRTL ? 0 : 2, marginRight: isRTL ? 2 : 0 }}>*</span>}
         </span>
         <Icon className="dark-field-icon" style={{ fontSize: 17 }} />
         {field.multiline ? (
-          <textarea className="dark-field-input" name={field.name} value={value} placeholder={field.placeholder} rows={field.rows || 2} onChange={onChange} onFocus={() => setFocused(true)} onBlur={(e) => { setFocused(false); onBlur(e); }} />
+          <textarea className="dark-field-input" name={field.name} value={value} placeholder={field.placeholder} rows={field.rows || 2} onChange={onChange} onFocus={() => setFocused(true)} onBlur={(e) => { setFocused(false); onBlur(e); }} style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }} />
         ) : (
-          <input className="dark-field-input" type={field.type || 'text'} name={field.name} value={value} placeholder={field.placeholder} onChange={onChange} onFocus={() => setFocused(true)} onBlur={(e) => { setFocused(false); onBlur(e); }} />
+          <input className="dark-field-input" type={field.type || 'text'} name={field.name} value={value} placeholder={field.placeholder} onChange={onChange} onFocus={() => setFocused(true)} onBlur={(e) => { setFocused(false); onBlur(e); }} style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }} />
         )}
       </div>
       <div className="dark-field-helper" style={{ color: hasError ? DesignSystem.colors.error : DesignSystem.colors.textMuted }}>{hasError ? error : '\u00A0'}</div>
@@ -151,7 +260,7 @@ const OrderSuccessScreen = ({ orderResult, onContinue, t, isRTL }) => (
         <Typography sx={{ fontFamily: isRTL ? DesignSystem.typography.ar : DesignSystem.typography.display, fontWeight: 900, fontSize: '2rem', color: DesignSystem.colors.bg, mb: 1, textTransform: 'uppercase' }}>
           {t('checkout.orderConfirmed', 'Order Confirmed!')}
         </Typography>
-        <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1.5, bgcolor: 'rgba(200,255,0,0.05)', border: '1px solid rgba(200,255,0,0.2)', borderRadius: '10px', px: 2.5, py: 1, mb: 3 }}>
+        <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1.5, bgcolor: 'rgba(0,128,255,0.05)', border: '1px solid rgba(0,128,255,0.2)', borderRadius: '10px', px: 2.5, py: 1, mb: 3 }}>
           <Receipt sx={{ color: DesignSystem.colors.accent, fontSize: 18 }} />
           <Typography sx={{ fontFamily: DesignSystem.typography.mono, fontWeight: 700, fontSize: '1.1rem', color: DesignSystem.colors.accent, letterSpacing: '0.05em' }}>#{orderResult?.orderNumber}</Typography>
         </Box>
@@ -186,7 +295,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove, isRTL, t }) => (
         </Box>
         <Box sx={{ display: 'flex', gap: 1, mb: 1.5, flexWrap: 'wrap', flexDirection: isRTL ? 'row-reverse' : 'row' }}>
           <Chip label={`${t('common:size', 'Size')}: ${item.selectedSize}`} size="small" sx={{ fontFamily: DesignSystem.typography.body, fontWeight: 600, fontSize: '0.7rem', height: 24, bgcolor: DesignSystem.colors.bgField, color: DesignSystem.colors.bg, border: `1px solid ${DesignSystem.colors.border}`, borderRadius: '6px' }} />
-          {item.isOffer && <Chip icon={<LocalOffer sx={{ fontSize: 14 }} />} label={t('common:offers', 'Offer')} size="small" sx={{ fontFamily: DesignSystem.typography.body, fontWeight: 600, fontSize: '0.7rem', height: 24, bgcolor: 'rgba(200,255,0,0.05)', color: DesignSystem.colors.accent, border: '1px solid rgba(200,255,0,0.2)', borderRadius: '6px' }} />}
+          {item.isOffer && <Chip icon={<LocalOffer sx={{ fontSize: 14 }} />} label={t('common:offers', 'Offer')} size="small" sx={{ fontFamily: DesignSystem.typography.body, fontWeight: 600, fontSize: '0.7rem', height: 24, bgcolor: 'rgba(0,128,255,0.05)', color: DesignSystem.colors.accent, border: '1px solid rgba(0,128,255,0.2)', borderRadius: '6px' }} />}
           {item.discount > 0 && <Chip label={`-${item.discount}%`} size="small" sx={{ fontFamily: DesignSystem.typography.body, fontWeight: 700, fontSize: '0.7rem', height: 24, bgcolor: 'rgba(34,197,94,0.05)', color: DesignSystem.colors.success, border: '1px solid rgba(34,197,94,0.2)', borderRadius: '6px' }} />}
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexDirection: isRTL ? 'row-reverse' : 'row' }}>
@@ -195,9 +304,9 @@ const CartItem = ({ item, onUpdateQuantity, onRemove, isRTL, t }) => (
             {item.quantity > 1 && <Typography sx={{ fontFamily: DesignSystem.typography.body, fontSize: '0.7rem', color: DesignSystem.colors.textMuted, mt: 0.25 }}>{item.price.toFixed(2)} TND {t('checkout.each', 'each')}</Typography>}
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', borderRadius: '8px', border: `1.5px solid ${DesignSystem.colors.border}`, overflow: 'hidden', '&:hover': { borderColor: DesignSystem.colors.accent } }}>
-            <IconButton size="small" onClick={() => onUpdateQuantity(item.productId, item.quantity - 1, item.selectedSize)} disabled={item.quantity <= 1} sx={{ color: DesignSystem.colors.textMuted, borderRadius: 0, p: 0.8, '&:hover': { bgcolor: 'rgba(200,255,0,0.05)', color: DesignSystem.colors.accent }, '&.Mui-disabled': { color: DesignSystem.colors.textPlaceholder } }}><Remove sx={{ fontSize: 16 }} /></IconButton>
+            <IconButton size="small" onClick={() => onUpdateQuantity(item.productId, item.quantity - 1, item.selectedSize)} disabled={item.quantity <= 1} sx={{ color: DesignSystem.colors.textMuted, borderRadius: 0, p: 0.8, '&:hover': { bgcolor: 'rgba(0,128,255,0.05)', color: DesignSystem.colors.accent }, '&.Mui-disabled': { color: DesignSystem.colors.textPlaceholder } }}><Remove sx={{ fontSize: 16 }} /></IconButton>
             <Typography sx={{ fontFamily: DesignSystem.typography.mono, fontWeight: 700, minWidth: 36, textAlign: 'center', fontSize: '0.9rem', color: DesignSystem.colors.bg, userSelect: 'none' }}>{item.quantity}</Typography>
-            <IconButton size="small" onClick={() => onUpdateQuantity(item.productId, item.quantity + 1, item.selectedSize)} sx={{ color: DesignSystem.colors.textMuted, borderRadius: 0, p: 0.8, '&:hover': { bgcolor: 'rgba(200,255,0,0.05)', color: DesignSystem.colors.accent } }}><Add sx={{ fontSize: 16 }} /></IconButton>
+            <IconButton size="small" onClick={() => onUpdateQuantity(item.productId, item.quantity + 1, item.selectedSize)} sx={{ color: DesignSystem.colors.textMuted, borderRadius: 0, p: 0.8, '&:hover': { bgcolor: 'rgba(0,128,255,0.05)', color: DesignSystem.colors.accent } }}><Add sx={{ fontSize: 16 }} /></IconButton>
           </Box>
         </Box>
       </Box>
@@ -237,7 +346,7 @@ const Checkout = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [orderSuccess, setOrderSuccess] = useState(null);
 
-  useEffect(() => { injectDarkFormStyles(isRTL); }, [isRTL]);
+  useEffect(() => { injectDarkFormStyles(isRTL); return () => { const el = document.getElementById('checkout-dark-styles'); if (el) el.remove(); }; }, [isRTL]);
   useEffect(() => { document.documentElement.dir = isRTL ? 'rtl' : 'ltr'; document.documentElement.lang = i18n.language; }, [isRTL, i18n.language]);
 
   useEffect(() => {
@@ -345,7 +454,7 @@ const Checkout = () => {
                 </Box>
 
                 <Box sx={{ p: { xs: 3, md: 4 } }}>
-                  <Box sx={{ mb: 3, p: 2.5, bgcolor: 'rgba(200,255,0,0.03)', borderRadius: '10px', border: `1px solid ${DesignSystem.colors.border}` }}>
+                  <Box sx={{ mb: 3, p: 2.5, bgcolor: 'rgba(0,128,255,0.03)', borderRadius: '10px', border: `1px solid ${DesignSystem.colors.border}` }}>
                     <Typography sx={{ fontFamily: DesignSystem.typography.display, fontWeight: 800, fontSize: '0.85rem', color: DesignSystem.colors.accent, textTransform: 'uppercase', mb: 2, letterSpacing: '0.05em' }}>{t('checkout.orderSummary', 'Order Summary')}</Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}><Typography sx={{ fontFamily: DesignSystem.typography.body, fontSize: '0.85rem', color: DesignSystem.colors.textMuted }}>{t('checkout.subtotalLabel', 'Subtotal')} ({cartCount} {cartCount === 1 ? t('cart.item', 'item') : t('cart.items', 'items')})</Typography><Typography sx={{ fontFamily: DesignSystem.typography.body, fontSize: '0.85rem', fontWeight: 600, color: DesignSystem.colors.bg }}>{formatCurrency(subtotal)}</Typography></Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}><Typography sx={{ fontFamily: DesignSystem.typography.body, fontSize: '0.85rem', color: DesignSystem.colors.textMuted }}>{t('checkout.shipping', 'Shipping')}</Typography><Box sx={{ textAlign: 'right' }}>{shippingCost === 0 ? <Chip label={t('common:free', 'FREE')} size="small" sx={{ fontFamily: DesignSystem.typography.display, fontWeight: 700, fontSize: '0.7rem', height: 22, bgcolor: 'rgba(34,197,94,0.1)', color: DesignSystem.colors.success, border: '1px solid rgba(34,197,94,0.3)' }} /> : <Typography sx={{ fontFamily: DesignSystem.typography.body, fontSize: '0.85rem', fontWeight: 600, color: DesignSystem.colors.bg }}>+{formatCurrency(shippingCost)}</Typography>}</Box></Box>
@@ -354,11 +463,13 @@ const Checkout = () => {
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><Typography sx={{ fontFamily: DesignSystem.typography.display, fontWeight: 800, fontSize: '0.9rem', color: DesignSystem.colors.bg, textTransform: 'uppercase' }}>{t('checkout.total', 'Total')}</Typography><Typography className="price-glow" sx={{ fontFamily: DesignSystem.typography.display, fontWeight: 900, fontSize: '1.3rem', color: DesignSystem.colors.accent }}>{formatCurrency(total)}</Typography></Box>
                   </Box>
 
-                  {FORM_FIELDS.map((field) => <DarkField key={field.name} field={field} value={formData[field.name]} onChange={handleChange(field.name)} onBlur={handleBlur(field.name)} error={errors[field.name]} touched={touched[field.name]} isRTL={isRTL} />)}
+                  <Box className="checkout-form-container">
+                    {FORM_FIELDS.map((field) => <DarkField key={field.name} field={field} value={formData[field.name]} onChange={handleChange(field.name)} onBlur={handleBlur(field.name)} error={errors[field.name]} touched={touched[field.name]} isRTL={isRTL} />)}
+                  </Box>
                   
                   <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
-                    <button className="dark-submit-btn" onClick={handleSubmit} disabled={isSubmitting || cartIsEmpty} type="button" style={{ marginTop: 16 }}>
-                      {isSubmitting ? <><span className="checkout-spinner"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke={DesignSystem.colors.bg} strokeWidth="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" /></svg></span>{t('checkout.processing', 'Processing...')}</> : <><Lock sx={{ fontSize: 18 }} />{t('checkout.placeOrder', 'Place Order')} • {formatCurrency(total)}</>}
+                    <button className="dark-submit-btn" onClick={handleSubmit} disabled={isSubmitting || cartIsEmpty} type="button" style={{ marginTop: 16, color: 'white' }}>
+                      {isSubmitting ? <><span className="checkout-spinner"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" strokeWidth="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" /></svg></span>{t('checkout.processing', 'Processing...')}</> : <><Lock sx={{ fontSize: 18, color: 'white' }} />{t('checkout.placeOrder', 'Place Order')} • {formatCurrency(total)}</>}
                     </button>
                   </motion.div>
 

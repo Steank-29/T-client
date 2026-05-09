@@ -21,6 +21,7 @@
   },
   "nav": {
     "home": "Home",
+    "menu": "Menu",
     "offers": "Offers",
     "sport": "Sport",
     "streetwear": "Streetwear",
@@ -154,7 +155,7 @@
     "moreForFree": "more for free shipping",
     "placeOrder": "Place Order",
     "processing": "Processing...",
-    "secure": "Secured by 256-bit SSL Encryption",
+    "secure": "Authentic product from Tawakkol",
     "orderConfirmed": "Order Confirmed!",
     "thankYou": "Thank you for your order! A confirmation email has been sent to",
     "expectedDelivery": "Expected delivery: 3-5 business days",
