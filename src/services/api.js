@@ -117,7 +117,6 @@ export const productService = {
     return api.get('/products/low-stock');
   },
 
-
   // NEW: Stock management endpoints
   processOrderStock: (items) => {
     return api.post('/products/process-order-stock', { items }, {
@@ -199,9 +198,6 @@ export const offerService = {
   },
 };
 
-
-// Add this after the offerService in your api.js
-
 // ==================== Order Service ====================
 export const orderService = {
   // Create a new order (public)
@@ -248,7 +244,66 @@ export const orderService = {
   deleteOrder: (id) => api.delete(`/orders/${id}`),
 };
 
-// ==================== Helpers ====================
+// ==================== Stock Management Helpers ====================
+
+/**
+ * Get stock tracking dashboard data
+ * @param {Object} filters - { productId, size, lowStock, category, status }
+ */
+export const getStockTrackingHelper = async (filters = {}) => {
+  try {
+    const response = await productService.getStockTracking(filters);
+    return response.data;
+  } catch (error) {
+    console.error('Get stock tracking error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get stock history for a specific product size
+ * @param {String} productId - Product ID
+ * @param {String} size - Size (e.g., 'S', 'M', 'L')
+ */
+export const getProductStockHistoryHelper = async (productId, size) => {
+  try {
+    const response = await productService.getProductStockHistory(productId, size);
+    return response.data;
+  } catch (error) {
+    console.error('Get product stock history error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Process stock deduction when order is delivered/completed
+ * @param {Array} items - Array of { productId, size, quantity }
+ */
+export const processOrderStockHelper = async (items) => {
+  try {
+    const response = await productService.processOrderStock(items);
+    return response.data;
+  } catch (error) {
+    console.error('Process order stock error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Release reserved stock when order is cancelled
+ * @param {Array} items - Array of { productId, size, quantity }
+ */
+export const releaseOrderStockHelper = async (items) => {
+  try {
+    const response = await productService.releaseOrderStock(items);
+    return response.data;
+  } catch (error) {
+    console.error('Release order stock error:', error);
+    throw error;
+  }
+};
+
+// ==================== Form Data Helpers ====================
 
 // Updated createOfferFormData with stockBySize support
 export const createOfferFormData = (offerData, mainImageFile, additionalImageFiles) => {
