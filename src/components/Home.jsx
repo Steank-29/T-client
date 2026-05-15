@@ -18,7 +18,7 @@ import { productService, offerService } from '../services/api';
 import { useCart } from '../context/CartContext';
 
 // Category images for mobile slider
-import sportCategoryImg from '../assets/product2.jpg';
+import sportCategoryImg from '../assets/product3.jpg';
 import streetwearCategoryImg from '../assets/product8.jpg';
 import religiousCategoryImg from '../assets/product0.jpg';
 import offersCategoryImg from '../assets/p4.jpg';
