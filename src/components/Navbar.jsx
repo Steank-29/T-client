@@ -84,8 +84,8 @@ const getNavItems = (t) => [
   { label: t('nav.home', 'Home'), path: '/', variant: 'default' },
   { label: t('nav.offers', 'Offers'), path: '/offers', variant: 'offers' },
   { label: t('nav.sport', 'Sport'), path: '/sport', variant: 'default' },
-  { label: t('nav.streetwear', 'Streetwear'), path: '/streetwear', variant: 'default' },
-  { label: t('nav.religious', 'Religious'), path: '/religious', variant: 'default' },
+  //{ label: t('nav.streetwear', 'Streetwear'), path: '/streetwear', variant: 'default' },
+  //{ label: t('nav.religious', 'Religious'), path: '/religious', variant: 'default' },
   { label: t('nav.contact', 'Contact'), path: '/contact', variant: 'offers' },
 ];
 

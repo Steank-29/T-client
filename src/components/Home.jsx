@@ -74,7 +74,6 @@ const cardReveal = {
 };
 
 // ==================== Mobile Image Slider ====================
-// ==================== Mobile Image Slider ====================
 const MobileImageSlider = () => {
   const { t, i18n } = useTranslation(['home', 'common']);
   const navigate = useNavigate();
@@ -83,14 +82,15 @@ const MobileImageSlider = () => {
   const [isHovered, setIsHovered] = useState(false);
   const autoPlayRef = useRef(null);
 
+  // Only Sport category in the slider
   const slides = [
-    {
-      image: offersCategoryImg,
-      title: t('common:offersh'),
-      tagline: t('home:categories.offers.tagline', 'Special Deals'),
-      color: T.colors.offers,
-      path: '/offers',
-    },
+    // {
+    //   image: offersCategoryImg,
+    //   title: t('common:offersh'),
+    //   tagline: t('home:categories.offers.tagline', 'Special Deals'),
+    //   color: T.colors.offers,
+    //   path: '/offers',
+    // },
     {
       image: sportCategoryImg,
       title: t('common:sporth'),
@@ -98,20 +98,20 @@ const MobileImageSlider = () => {
       color: T.colors.sport,
       path: '/sport',
     },
-    {
-      image: streetwearCategoryImg,
-      title: t('common:streetwearh'),
-      tagline: t('home:categories.streetwear.tagline', 'Urban Style'),
-      color: T.colors.streetwear,
-      path: '/streetwear',
-    },
-    {
-      image: religiousCategoryImg,
-      title: t('common:religioush'),
-      tagline: t('home:categories.religious.tagline', 'Modest Fashion'),
-      color: T.colors.religious,
-      path: '/religious',
-    },
+    // {
+    //   image: streetwearCategoryImg,
+    //   title: t('common:streetwearh'),
+    //   tagline: t('home:categories.streetwear.tagline', 'Urban Style'),
+    //   color: T.colors.streetwear,
+    //   path: '/streetwear',
+    // },
+    // {
+    //   image: religiousCategoryImg,
+    //   title: t('common:religioush'),
+    //   tagline: t('home:categories.religious.tagline', 'Modest Fashion'),
+    //   color: T.colors.religious,
+    //   path: '/religious',
+    // },
   ];
 
   const goToSlide = useCallback((index) => {
@@ -128,7 +128,7 @@ const MobileImageSlider = () => {
 
   // Auto-play
   useEffect(() => {
-    if (!isHovered) {
+    if (!isHovered && slides.length > 1) {
       autoPlayRef.current = setInterval(goToNext, 4000);
     }
     return () => {
@@ -136,7 +136,7 @@ const MobileImageSlider = () => {
         clearInterval(autoPlayRef.current);
       }
     };
-  }, [isHovered, goToNext]);
+  }, [isHovered, goToNext, slides.length]);
 
   const slideVariants = {
     enter: (direction) => ({
@@ -153,12 +153,15 @@ const MobileImageSlider = () => {
     }),
   };
 
+  // If no slides, return null
+  if (slides.length === 0) return null;
+
   return (
     <Box
       sx={{
         display: { xs: 'block', md: 'none' },
         direction: isRTL ? 'rtl' : 'ltr',
-        mt: -14,
+        mt: -18,
         ml: -1,
         mr: -1,
       }}
@@ -169,7 +172,7 @@ const MobileImageSlider = () => {
         sx={{
           position: 'relative',
           width: '100%',
-          height: '100vh',
+          height: '80vh',
           maxHeight: '100svh',
           borderRadius: 0,
           overflow: 'hidden',
@@ -324,90 +327,94 @@ const MobileImageSlider = () => {
           </AnimatePresence>
         </Box>
 
-        {/* Navigation Arrows */}
-        <IconButton
-          onClick={goToPrev}
-          sx={{
-            position: 'absolute',
-            left: isRTL ? 'auto' : 12,
-            right: isRTL ? 12 : 'auto',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            bgcolor: 'rgba(255,255,255,0.15)',
-            color: T.colors.white,
-            width: 44,
-            height: 44,
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            '&:hover': {
-              bgcolor: 'rgba(255,255,255,0.3)',
-              transform: 'translateY(-50%) scale(1.1)',
-            },
-            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-            zIndex: 2,
-            transition: 'all 0.3s ease',
-          }}
-        >
-          {isRTL ? <ChevronRight sx={{ fontSize: 30 }} /> : <ChevronLeft sx={{ fontSize: 30 }} />}
-        </IconButton>
-
-        <IconButton
-          onClick={goToNext}
-          sx={{
-            position: 'absolute',
-            right: isRTL ? 'auto' : 12,
-            left: isRTL ? 12 : 'auto',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            bgcolor: 'rgba(255,255,255,0.15)',
-            color: T.colors.white,
-            width: 44,
-            height: 44,
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            '&:hover': {
-              bgcolor: 'rgba(255,255,255,0.3)',
-              transform: 'translateY(-50%) scale(1.1)',
-            },
-            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-            zIndex: 2,
-            transition: 'all 0.3s ease',
-          }}
-        >
-          {isRTL ? <ChevronLeft sx={{ fontSize: 30 }} /> : <ChevronRight sx={{ fontSize: 30 }} />}
-        </IconButton>
-
-        {/* Dots Indicator */}
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 40,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            display: 'flex',
-            gap: 1.5,
-            zIndex: 2,
-          }}
-        >
-          {slides.map((_, index) => (
-            <Box
-              key={index}
-              onClick={() => goToSlide(index)}
+        {/* Navigation Arrows - Only show if more than 1 slide */}
+        {slides.length > 1 && (
+          <>
+            <IconButton
+              onClick={goToPrev}
               sx={{
-                width: index === currentSlide ? 32 : 10,
-                height: 10,
-                borderRadius: '5px',
-                bgcolor: index === currentSlide ? T.colors.white : 'rgba(255,255,255,0.3)',
-                cursor: 'pointer',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                boxShadow: index === currentSlide ? '0 0 12px rgba(255,255,255,0.6)' : 'none',
+                position: 'absolute',
+                left: isRTL ? 'auto' : 12,
+                right: isRTL ? 12 : 'auto',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                bgcolor: 'rgba(255,255,255,0.15)',
+                color: T.colors.white,
+                width: 44,
+                height: 44,
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255,255,255,0.2)',
                 '&:hover': {
-                  bgcolor: 'rgba(255,255,255,0.7)',
+                  bgcolor: 'rgba(255,255,255,0.3)',
+                  transform: 'translateY(-50%) scale(1.1)',
                 },
+                boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                zIndex: 2,
+                transition: 'all 0.3s ease',
               }}
-            />
-          ))}
-        </Box>
+            >
+              {isRTL ? <ChevronRight sx={{ fontSize: 30 }} /> : <ChevronLeft sx={{ fontSize: 30 }} />}
+            </IconButton>
+
+            <IconButton
+              onClick={goToNext}
+              sx={{
+                position: 'absolute',
+                right: isRTL ? 'auto' : 12,
+                left: isRTL ? 12 : 'auto',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                bgcolor: 'rgba(255,255,255,0.15)',
+                color: T.colors.white,
+                width: 44,
+                height: 44,
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                '&:hover': {
+                  bgcolor: 'rgba(255,255,255,0.3)',
+                  transform: 'translateY(-50%) scale(1.1)',
+                },
+                boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                zIndex: 2,
+                transition: 'all 0.3s ease',
+              }}
+            >
+              {isRTL ? <ChevronLeft sx={{ fontSize: 30 }} /> : <ChevronRight sx={{ fontSize: 30 }} />}
+            </IconButton>
+
+            {/* Dots Indicator */}
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 40,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                display: 'flex',
+                gap: 1.5,
+                zIndex: 2,
+              }}
+            >
+              {slides.map((_, index) => (
+                <Box
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  sx={{
+                    width: index === currentSlide ? 32 : 10,
+                    height: 10,
+                    borderRadius: '5px',
+                    bgcolor: index === currentSlide ? T.colors.white : 'rgba(255,255,255,0.3)',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    boxShadow: index === currentSlide ? '0 0 12px rgba(255,255,255,0.6)' : 'none',
+                    '&:hover': {
+                      bgcolor: 'rgba(255,255,255,0.7)',
+                    },
+                  }}
+                />
+              ))}
+            </Box>
+          </>
+        )}
       </Box>
     </Box>
   );
@@ -553,10 +560,11 @@ const Home = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '' });
   const isRTL = i18n.language === 'ar';
 
+  // Only Sport category is active
   const sport = useCategoryProducts('Sport', 3);
-  const streetwear = useCategoryProducts('Streetwear', 3);
-  const religious = useCategoryProducts('Religious', 3);
-  const { offers, loading: offersLoading } = useOffers(3);
+  // const streetwear = useCategoryProducts('Streetwear', 3);
+  // const religious = useCategoryProducts('Religious', 3);
+  // const { offers, loading: offersLoading } = useOffers(3);
 
   useEffect(() => {
     document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
@@ -630,7 +638,7 @@ const Home = () => {
         </Container>
       </Box>
 
-      {/* COLLECTIONS SECTION */}
+      {/* COLLECTIONS SECTION - Only Sport category visible */}
       <Box sx={{ bgcolor: T.colors.white, py: { xs: 4, md: 8 } }}>
         <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: { xs: 4, md: 8 } }}>
@@ -645,10 +653,13 @@ const Home = () => {
             </motion.div>
           </Box>
 
+          {/* Only Sport Category Section */}
           <CategorySection title={t('common:sporth')} items={sport.products} loading={sport.loading} accent={T.colors.sport} onAddToCart={handleAddToCart} onView={handleViewProduct} onViewAll={() => navigate('/sport')} />
-          <CategorySection title={t('common:streetwearh')} items={streetwear.products} loading={streetwear.loading} accent={T.colors.streetwear} onAddToCart={handleAddToCart} onView={handleViewProduct} onViewAll={() => navigate('/streetwear')} />
-          <CategorySection title={t('common:religioush')} items={religious.products} loading={religious.loading} accent={T.colors.religious} onAddToCart={handleAddToCart} onView={handleViewProduct} onViewAll={() => navigate('/religious')} />
-          <CategorySection title={t('common:offersh')} items={offers} loading={offersLoading} isOffer accent={T.colors.offers} onAddToCart={handleAddToCart} onView={handleViewProduct} onViewAll={() => navigate('/offers')} />
+          
+          {/* Commented out other categories */}
+          {/* <CategorySection title={t('common:streetwearh')} items={streetwear.products} loading={streetwear.loading} accent={T.colors.streetwear} onAddToCart={handleAddToCart} onView={handleViewProduct} onViewAll={() => navigate('/streetwear')} /> */}
+          {/* <CategorySection title={t('common:religioush')} items={religious.products} loading={religious.loading} accent={T.colors.religious} onAddToCart={handleAddToCart} onView={handleViewProduct} onViewAll={() => navigate('/religious')} /> */}
+          {/* <CategorySection title={t('common:offersh')} items={offers} loading={offersLoading} isOffer accent={T.colors.offers} onAddToCart={handleAddToCart} onView={handleViewProduct} onViewAll={() => navigate('/offers')} /> */}
 
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }}>
             <Box sx={{ textAlign: 'center', mt: 2 }}>
